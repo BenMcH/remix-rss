@@ -4,6 +4,7 @@ import { useRouteData } from "remix";
 
 import stylesUrl from "../styles/index.css";
 import { getFeed } from '../services/rss';
+import { useEffect, useState } from 'react';
 
 export let meta: MetaFunction = () => {
   return {
@@ -23,14 +24,52 @@ export let loader: LoaderFunction = async ({request}) => {
   if (feedParam) {
     const feed = await getFeed(feedParam);
 
-    return {feed};
+    return {feed, feedName: feedParam};
   }
 
   return {}
 };
 
+const Recents: React.FC<{recents: string[]}> = ({recents}) => (
+  <section id="recents">
+    <h4>{'recent feeds'}</h4>
+
+    <ol>
+      {recents.map((recent) => (
+        <li key={recent}>
+          <a href={`/?feed=${recent}`}>{recent}</a>
+        </li>
+      ))}
+    </ol>
+  </section>
+)
+
 export default function Index() {
   let data = useRouteData();
+
+  const [recents, setRecents] = useState<string[]>([]);
+
+  useEffect(() => {
+    const feeds = JSON.parse(localStorage.getItem('recentRssFeeds') || '[]');
+
+    console.log({feeds})
+
+    setRecents(feeds);
+  }, []);
+
+  useEffect(() => {
+    if (data.feedName) {
+      console.log(data.feedName)
+      let newRecents = [data.feedName, ...recents.filter((recent) => recent !== data.feedName)];
+
+      newRecents = newRecents.slice(0, 10)
+
+      console.log(newRecents)
+
+      setRecents(newRecents);
+      localStorage.setItem('recentRssFeeds', JSON.stringify(newRecents))
+    }
+  }, [data.feedName]);
 
   if (data.feed) {
     const feed = data.feed as Parser.Output<{ [key: string]: any; }>;
@@ -56,12 +95,14 @@ export default function Index() {
   }
 
   return (
-    <main>
+    <div style={{maxWidth: '600px', margin: '0 auto'}}>
       <h1>Welcome to the RSS Reader</h1>
       <Form method="get">
         <label>{'RSS Feed:'} <input type="text" name="feed"/></label>
         <button type="submit">{'Go'}</button>
       </Form>
-    </main>
+
+      {recents.length > 0 && <Recents recents={recents} />}
+    </div>
   )
 }
