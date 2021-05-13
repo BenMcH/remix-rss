@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 
 export let meta: MetaFunction = () => {
   return {
-    title: "Remix Starter",
-    description: "Welcome to remix!"
+    title: "RSS Reader",
+    description: "Read an rss feed in peace"
   };
 };
 
