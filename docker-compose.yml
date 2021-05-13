@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  remix:
+    build:
+      context: .
+      args: 
+        REMIX_AUTH: ${REMIX_AUTH}
+    image: remix-rss
+    ports:
+      - 3000:3000
