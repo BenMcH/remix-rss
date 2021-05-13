@@ -58,8 +58,6 @@ const Recents: React.FC<{recents: IFeed[], maxWidth?: string, clear: () => void}
   );
 }
 
-const MAX_SNIPPET_LENGTH = 255;
-
 const FeedItem: React.FC<{item: Parser.Item}> = ({item}) => {
   let contentSnippet = item.contentSnippet || '';
 
@@ -120,7 +118,7 @@ export default function Index() {
     const feed = data.feed as Parser.Output<{ [key: string]: any; }>;
 
     return (
-      <div style={{display: 'flex', flexDirection: 'row', maxWidth: '1000px', margin: '0 auto'}}>
+      <div id="feed">
         {recents.length > 0 && <Recents recents={recents} maxWidth={'300px'} clear={resetRecents} />}
         <div>
           <Link to="/">{'< Return Home'}</Link>

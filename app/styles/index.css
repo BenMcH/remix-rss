@@ -3,3 +3,16 @@
  * will get unloaded, so don't worry so much about conflicting styles between
  * pages!
  */
+
+ #feed {
+    display: flex;
+    flex-direction: column-reverse;
+ }
+
+ @media (min-width: 1000px) {
+    #feed {
+        max-width: 1000px;
+        margin: 0 auto;
+        flex-direction: row;
+    }
+ }
