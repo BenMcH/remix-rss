@@ -52,19 +52,14 @@ export default function Index() {
   useEffect(() => {
     const feeds = JSON.parse(localStorage.getItem('recentRssFeeds') || '[]');
 
-    console.log({feeds})
-
     setRecents(feeds);
   }, []);
 
   useEffect(() => {
     if (data.feedName) {
-      console.log(data.feedName)
       let newRecents = [data.feedName, ...recents.filter((recent) => recent !== data.feedName)];
 
       newRecents = newRecents.slice(0, 10)
-
-      console.log(newRecents)
 
       setRecents(newRecents);
       localStorage.setItem('recentRssFeeds', JSON.stringify(newRecents))
