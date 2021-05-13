@@ -6,6 +6,11 @@ import stylesUrl from "../styles/index.css";
 import { getFeed } from '../services/rss';
 import { useEffect, useState } from 'react';
 
+interface IFeed {
+  url: string
+  name: string
+}
+
 export let meta: MetaFunction = () => {
   return {
     title: "RSS Reader",
@@ -29,14 +34,14 @@ export let loader: LoaderFunction = async ({request}) => {
   return {}
 };
 
-const Recents: React.FC<{recents: string[]}> = ({recents}) => (
+const Recents: React.FC<{recents: IFeed[]}> = ({recents}) => (
   <section id="recents">
     <h4>{'recent feeds'}</h4>
 
     <ol>
       {recents.map((recent) => (
-        <li key={recent}>
-          <a href={`/?feed=${recent}`}>{recent}</a>
+        <li key={recent.url}>
+          <a href={`/?feed=${recent.url}`}>{recent.name}</a>
         </li>
       ))}
     </ol>
@@ -46,7 +51,8 @@ const Recents: React.FC<{recents: string[]}> = ({recents}) => (
 export default function Index() {
   let data = useRouteData();
 
-  const [recents, setRecents] = useState<string[]>([]);
+
+  const [recents, setRecents] = useState<IFeed[]>([]);
 
   useEffect(() => {
     const feeds = JSON.parse(localStorage.getItem('recentRssFeeds') || '[]');
@@ -55,8 +61,8 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    if (data.feedName) {
-      let newRecents = [data.feedName, ...recents.filter((recent) => recent !== data.feedName)];
+    if (data.feedName && data.feed) {
+      let newRecents = [{url: data.feedName, name: data.feed.title}, ...recents.filter((recent) => recent.url !== data.feedName)];
 
       newRecents = newRecents.slice(0, 10)
 
