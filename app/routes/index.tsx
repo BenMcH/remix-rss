@@ -58,6 +58,35 @@ const Recents: React.FC<{recents: IFeed[], maxWidth?: string, clear: () => void}
   );
 }
 
+const MAX_SNIPPET_LENGTH = 255;
+
+const FeedItem: React.FC<{item: Parser.Item}> = ({item}) => {
+  let contentSnippet = item.contentSnippet || '';
+
+  contentSnippet = contentSnippet.split('\n')[0];
+
+  const [showAllContent, setShowAllContent] = useState(false);
+
+  return (
+    <li key={item.isoDate}>
+      <h3>{item.title}</h3>
+      <p>
+        {contentSnippet !== item.contentSnippet && (
+          <>
+            <a href="#" onClick={(e) => {e.preventDefault(); setShowAllContent(!showAllContent)}}>{showAllContent ? 'Read Less' : 'Read More'}</a>
+            {' | '}
+          </>
+        )}
+        <a href={item.link} target="_blank">{'Open Link'}</a>
+      </p>
+      {showAllContent ? 
+        <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}} dangerouslySetInnerHTML={{__html: item.content || ''}} />  
+        : <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}}>{showAllContent ? item.contentSnippet : contentSnippet}</p>
+      }
+    </li>
+  )
+}
+
 export default function Index() {
   let data = useRouteData();
 
@@ -97,15 +126,11 @@ export default function Index() {
           <Link to="/">{'< Return Home'}</Link>
           <h2>{feed.title}</h2>
           <h4>{feed.description}</h4>
-          <img src={feed.image?.url} />
+          <img style={{maxWidth: '600px'}} src={feed.image?.url} />
 
           <ul>
           {feed.items.map(item => (
-            <li key={item.isoDate}>
-              <p>{item.title}</p>
-              <p>{item.contentSnippet}</p>
-              <p><a href={item.link} target="_blank">{'Read More'}</a></p>
-            </li>
+            <FeedItem item={item} key={item.isoDate} />
           ))}
           </ul>
         </div>
