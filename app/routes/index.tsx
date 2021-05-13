@@ -18,7 +18,6 @@ export let links: LinksFunction = () => {
 };
 
 export let loader: LoaderFunction = async ({request}) => {
-  const params: any = {}
   const {searchParams} = new URL(request.url);
   const feedParam = searchParams.get('feed');
   if (feedParam) {
