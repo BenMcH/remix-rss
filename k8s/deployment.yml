@@ -56,6 +56,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: rss-site
+            name: rss-service
             port:
               number: 3000
