@@ -23,6 +23,7 @@ spec:
       containers:
       - name: rss-site
         image: localhost:5000/rss-site:latest
+        imagePullPolicy: Always
         command: ["npm"]
         args:
           - start
