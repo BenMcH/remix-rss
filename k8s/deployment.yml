@@ -23,10 +23,9 @@ spec:
       containers:
       - name: rss-site
         image: localhost:5000/rss-site:latest
-        command: ["/bin/sh"]
+        command: ["npm"]
         args:
-          - -l
-          - /app/worker-entrypoint.sh
+          - start
 ---
 apiVersion: v1
 kind: Service
