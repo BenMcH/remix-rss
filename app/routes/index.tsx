@@ -14,10 +14,10 @@ interface IFeed {
 const fetchRecents = (): IFeed[] => JSON.parse(localStorage.getItem('recentRssFeeds') || '[]');
 const persistRecents = (feeds: IFeed[]) => localStorage.setItem('recentRssFeeds', JSON.stringify(feeds));
 
-export let meta: MetaFunction = () => {
+export let meta: MetaFunction = ({data}) => {
   return {
-    title: "RSS Reader",
-    description: "Read an rss feed in peace"
+    title: data.feed?.title || "RSS Reader",
+    description: data.feed?.description || "Read an rss feed in peace"
   };
 };
 
