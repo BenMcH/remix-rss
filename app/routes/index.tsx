@@ -1,5 +1,5 @@
 import Parser from 'rss-parser';
-import { MetaFunction, LinksFunction, LoaderFunction, Form, Link } from "remix";
+import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction } from "remix";
 import { useRouteData } from "remix";
 
 import stylesUrl from "../styles/index.css";
@@ -24,6 +24,10 @@ export let meta: MetaFunction = ({data}) => {
 export let links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrl }];
 };
+
+export let headers: HeadersFunction = () => ({
+  'Cache-Control': 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
+})
 
 export let loader: LoaderFunction = async ({request}) => {
   const {searchParams} = new URL(request.url);
