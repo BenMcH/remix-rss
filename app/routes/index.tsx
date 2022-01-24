@@ -5,7 +5,7 @@ import { useLoaderData } from "remix";
 import stylesUrl from "~/styles/index.css";
 import { getFeed } from '~/services/rss';
 import Recents from '~/components/Recents';
-import FeedItem from '~/components/FeedItem';
+import FeedItem, { FeedItemPost } from '~/components/FeedItem';
 
 export interface IFeed {
   url: string
@@ -40,20 +40,28 @@ export let loader: LoaderFunction = async ({request}) => {
   return {}
 };
 
+export type Feed = {
+  title: string
+  url: string
+  description: string
+  image?: string
+  items: FeedItemPost[]
+}
+
 export default function Index() {
-  let data = useLoaderData();
+  let data = useLoaderData<{feed?: Feed}>();
 
   if (data.feed) {
-    const feed = data.feed as Parser.Output<{ [key: string]: any; }>;
+    const feed = data.feed;
 
     return (
       <div id="feed">
-        <Recents feedTitle={feed.title} feedUrl={data.feedName} maxWidth="20%" />
+        <Recents feedTitle={feed.title} feedUrl={data.feed.url} maxWidth="20%" />
         <div>
           <Link to="/">{'< Return Home'}</Link>
           <h2>{feed.title}</h2>
           <h4>{feed.description}</h4>
-          <img style={{maxWidth: '600px'}} src={feed.image?.url} />
+          <img style={{maxWidth: '600px'}} src={feed.image} />
 
           <ul>
           {feed.items.map(item => (

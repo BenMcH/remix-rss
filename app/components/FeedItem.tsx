@@ -1,7 +1,15 @@
 import Parser from "rss-parser";
 import { useState } from "react";
 
-const FeedItem: React.FC<{item: Parser.Item}> = ({item}) => {
+export type FeedItemPost = {
+	contentSnippet: string;
+	isoDate: string;
+	title: string
+	link: string;
+	content: string;
+}
+
+const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
   let contentSnippet = item.contentSnippet || '';
 
   contentSnippet = contentSnippet.split('\n')[0];
@@ -22,7 +30,7 @@ const FeedItem: React.FC<{item: Parser.Item}> = ({item}) => {
       </p>
       {showAllContent ? 
         <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}} dangerouslySetInnerHTML={{__html: item.content || ''}} />  
-        : <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}}>{showAllContent ? item.contentSnippet : contentSnippet}</p>
+        : <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}}>{contentSnippet}</p>
       }
     </li>
   )
