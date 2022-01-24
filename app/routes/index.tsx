@@ -1,18 +1,17 @@
 import Parser from 'rss-parser';
 import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction } from "remix";
-import { useRouteData } from "remix";
+import { useLoaderData } from "remix";
 
-import stylesUrl from "../styles/index.css";
-import { getFeed } from '../services/rss';
-import { useEffect, useState } from 'react';
+import stylesUrl from "~/styles/index.css";
+import { getFeed } from '~/services/rss';
+import Recents from '~/components/Recents';
+import FeedItem from '~/components/FeedItem';
 
-interface IFeed {
+export interface IFeed {
   url: string
   name: string
 }
 
-const fetchRecents = (): IFeed[] => JSON.parse(localStorage.getItem('recentRssFeeds') || '[]');
-const persistRecents = (feeds: IFeed[]) => localStorage.setItem('recentRssFeeds', JSON.stringify(feeds));
 
 export let meta: MetaFunction = ({data}) => {
   return {
@@ -41,89 +40,15 @@ export let loader: LoaderFunction = async ({request}) => {
   return {}
 };
 
-const Recents: React.FC<{recents: IFeed[], maxWidth?: string, clear: () => void}> = ({recents, clear, maxWidth = '100%'}) => {
-  const reset: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
-    event.preventDefault();
-    clear();
-  }
-
-  return (
-    <section id="recents" style={{maxWidth, marginRight: '2em'}}>
-      <h4>{'recent feeds - '}<a href="#" onClick={reset}>{'Clear Recents'}</a></h4>
-
-      <ol>
-        {recents.map((recent) => (
-          <li key={recent.url}>
-            <a href={`/?feed=${recent.url}`}>{recent.name}</a>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
-const FeedItem: React.FC<{item: Parser.Item}> = ({item}) => {
-  let contentSnippet = item.contentSnippet || '';
-
-  contentSnippet = contentSnippet.split('\n')[0];
-
-  const [showAllContent, setShowAllContent] = useState(false);
-
-  return (
-    <li key={item.isoDate}>
-      <h3>{item.title}</h3>
-      <p>
-        {contentSnippet !== item.content && (
-          <>
-            <a href="#" onClick={(e) => {e.preventDefault(); setShowAllContent(!showAllContent)}}>{showAllContent ? 'Read Less' : 'Read More'}</a>
-            {' | '}
-          </>
-        )}
-        <a href={item.link} target="_blank">{'Open Link'}</a>
-      </p>
-      {showAllContent ? 
-        <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}} dangerouslySetInnerHTML={{__html: item.content || ''}} />  
-        : <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}}>{showAllContent ? item.contentSnippet : contentSnippet}</p>
-      }
-    </li>
-  )
-}
-
 export default function Index() {
-  let data = useRouteData();
-
-
-  const [recents, setRecents] = useState<IFeed[]>([]);
-
-  const resetRecents = () => {
-    setRecents([]);
-    persistRecents([]);
-  }
-
-  useEffect(() => {
-    const feeds = fetchRecents();
-
-    setRecents(feeds);
-  }, []);
-
-  useEffect(() => {
-    if (data.feedName && data.feed) {
-      let existingRecents = fetchRecents();
-      let newRecents = [{url: data.feedName, name: data.feed.title}, ...existingRecents.filter((recent) => recent.url !== data.feedName)];
-
-      newRecents = newRecents.slice(0, 10)
-
-      setRecents(newRecents);
-      persistRecents(newRecents);
-    }
-  }, [data.feedName]);
+  let data = useLoaderData();
 
   if (data.feed) {
     const feed = data.feed as Parser.Output<{ [key: string]: any; }>;
 
     return (
       <div id="feed">
-        {recents.length > 0 && <Recents recents={recents} maxWidth={'300px'} clear={resetRecents} />}
+        <Recents feedTitle={feed.title} feedUrl={data.feedName} maxWidth="20%" />
         <div>
           <Link to="/">{'< Return Home'}</Link>
           <h2>{feed.title}</h2>
@@ -148,7 +73,7 @@ export default function Index() {
         <button type="submit">{'Go'}</button>
       </Form>
 
-      {recents.length > 0 && <Recents recents={recents} clear={resetRecents} />}
+      <Recents />
     </div>
   )
 }

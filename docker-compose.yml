@@ -3,8 +3,6 @@ services:
   remix:
     build:
       context: .
-      args: 
-        REMIX_AUTH: ${REMIX_AUTH}
     image: localhost:5000/rss-site:latest
     ports:
       - 3000:3000

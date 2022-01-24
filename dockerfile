@@ -1,7 +1,5 @@
 FROM node:16.1.0-alpine
 
-ARG REMIX_AUTH
-
 ADD . .
 
 RUN npm i
