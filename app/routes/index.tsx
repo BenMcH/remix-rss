@@ -3,7 +3,7 @@ import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunctio
 import { useLoaderData } from "remix";
 
 import stylesUrl from "~/styles/index.css";
-import { getFeed } from '~/services/rss';
+import { getFeed } from '~/services/rss.server';
 import Recents from '~/components/Recents';
 import FeedItem, { FeedItemPost } from '~/components/FeedItem';
 
@@ -24,8 +24,8 @@ export let links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrl }];
 };
 
-export let headers: HeadersFunction = () => ({
-  'Cache-Control': 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
+export let headers: HeadersFunction = ({loaderHeaders}) => ({
+  'Cache-Control': loaderHeaders.get('Cache-Control') || 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
 })
 
 export let loader: LoaderFunction = async ({request}) => {
@@ -34,7 +34,12 @@ export let loader: LoaderFunction = async ({request}) => {
   if (feedParam) {
     const feed = await getFeed(feedParam);
 
-    return {feed, feedName: feedParam};
+    return new Response(JSON.stringify({feed, feedName: feedParam}), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
+      }
+    });
   }
 
   return {}
