@@ -1,5 +1,5 @@
-import Parser from "rss-parser";
-import { Feed } from "~/routes";
+import Parser from 'rss-parser';
+import { Feed } from '~/routes';
 
 const parser = new Parser();
 

@@ -1,5 +1,4 @@
-import Parser from "rss-parser";
-import { useState } from "react";
+import { useState } from 'react';
 
 export type FeedItemPost = {
 	contentSnippet: string;
@@ -22,11 +21,11 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
       <p>
         {contentSnippet !== item.content && (
           <>
-            <a href="#" onClick={(e) => {e.preventDefault(); setShowAllContent(!showAllContent)}}>{showAllContent ? 'Read Less' : 'Read More'}</a>
+            <a href='#' onClick={(e) => {e.preventDefault(); setShowAllContent(!showAllContent)}}>{showAllContent ? 'Read Less' : 'Read More'}</a>
             {' | '}
           </>
         )}
-        <a href={item.link} target="_blank">{'Open Link'}</a>
+        <a href={item.link} target='_blank'>{'Open Link'}</a>
       </p>
       {showAllContent ? 
         <p style={{paddingLeft: '2rem', borderLeft: '2px solid #333'}} dangerouslySetInnerHTML={{__html: item.content || ''}} />  

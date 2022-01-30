@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
-import { Prisma, User } from "@prisma/client";
-import { db } from "./db.server";
+import { User } from '@prisma/client';
+import { db } from './db.server';
 
 
 export type {

@@ -1,5 +1,5 @@
-import type { IFeed } from "~/routes";
-import { useState, useEffect } from "react";
+import type { IFeed } from '~/routes';
+import { useState, useEffect } from 'react';
 
 const fetchRecents = (): IFeed[] => JSON.parse(localStorage.getItem('recentRssFeeds') || '[]');
 const persistRecents = (feeds: IFeed[]) => localStorage.setItem('recentRssFeeds', JSON.stringify(feeds));
@@ -36,8 +36,8 @@ const Recents: React.FC<{feedTitle?: string, feedUrl?: string, maxWidth?: string
   }, [feedTitle, feedUrl]);
 
   return (
-    <section id="recents" style={{maxWidth, marginRight: '2em'}}>
-      <h4>{'recent feeds - '}<a href="#" onClick={reset}>{'Clear Recents'}</a></h4>
+    <section id='recents' style={{maxWidth, marginRight: '2em'}}>
+      <h4>{'recent feeds - '}<a href='#' onClick={reset}>{'Clear Recents'}</a></h4>
 
       <ol>
         {recents.map((recent) => (

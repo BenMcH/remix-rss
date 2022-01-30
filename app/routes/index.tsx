@@ -1,11 +1,11 @@
-import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction } from "remix";
-import { useLoaderData } from "remix";
+import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction } from 'remix';
+import { useLoaderData } from 'remix';
 
-import stylesUrl from "~/styles/index.css";
+import stylesUrl from '~/styles/index.css';
 import { getFeed } from '~/services/rss.server';
 import Recents from '~/components/Recents';
 import FeedItem, { FeedItemPost } from '~/components/FeedItem';
-import { authenticator } from "~/services/auth.server";
+import { authenticator } from '~/services/auth.server';
 
 export interface IFeed {
   url: string
@@ -14,13 +14,13 @@ export interface IFeed {
 
 export let meta: MetaFunction = ({data}) => {
   return {
-    title: data.feed?.title || "RSS Reader",
-    description: data.feed?.description || "Read an rss feed in peace"
+    title: data.feed?.title || 'RSS Reader',
+    description: data.feed?.description || 'Read an rss feed in peace'
   };
 };
 
 export let links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: stylesUrl }];
+  return [{ rel: 'stylesheet', href: stylesUrl }];
 };
 
 export let headers: HeadersFunction = ({loaderHeaders}) => ({
@@ -64,13 +64,13 @@ export default function Index() {
     const feed = data.feed;
 
     return (
-      <div id="feed">
-        <Recents feedTitle={feed.title} feedUrl={data.feed.url} maxWidth="20%" />
+      <div id='feed'>
+        <Recents feedTitle={feed.title} feedUrl={data.feed.url} maxWidth='20%' />
         <div>
           {data.email ? <>
-            Hi, {data.email}! <Link to="/logout">Logout</Link>
-          </> : <Link to="/login">Login</Link>}
-          <Link to="/">{'< Return Home'}</Link>
+            Hi, {data.email}! <Link to='/logout'>Logout</Link>
+          </> : <Link to='/login'>Login</Link>}
+          <Link to='/'>{'< Return Home'}</Link>
           <h2>{feed.title}</h2>
           <h4>{feed.description}</h4>
           <img style={{maxWidth: '600px'}} src={feed.image} />
@@ -89,11 +89,11 @@ export default function Index() {
     <div style={{maxWidth: '600px', margin: '0 auto'}}>
       <h1>Welcome to the RSS Reader</h1>
       {data.email ? <>
-        Hi, {data.email}! <Link to="/logout">Logout</Link>
-      </> : <Link to="/login">Login</Link>}
-      <Form method="get">
-        <label>{'RSS Feed:'} <input type="text" name="feed"/></label>
-        <button type="submit">{'Go'}</button>
+        Hi, {data.email}! <Link to='/logout'>Logout</Link>
+      </> : <Link to='/login'>Login</Link>}
+      <Form method='get'>
+        <label>{'RSS Feed:'} <input type='text' name='feed'/></label>
+        <button type='submit'>{'Go'}</button>
       </Form>
 
       <Recents />
