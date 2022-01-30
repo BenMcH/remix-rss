@@ -1,4 +1,3 @@
-import Parser from 'rss-parser';
 import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction } from "remix";
 import { useLoaderData } from "remix";
 
@@ -6,12 +5,12 @@ import stylesUrl from "~/styles/index.css";
 import { getFeed } from '~/services/rss.server';
 import Recents from '~/components/Recents';
 import FeedItem, { FeedItemPost } from '~/components/FeedItem';
+import { authenticator } from "~/services/auth.server";
 
 export interface IFeed {
   url: string
   name: string
 }
-
 
 export let meta: MetaFunction = ({data}) => {
   return {
@@ -31,10 +30,13 @@ export let headers: HeadersFunction = ({loaderHeaders}) => ({
 export let loader: LoaderFunction = async ({request}) => {
   const {searchParams} = new URL(request.url);
   const feedParam = searchParams.get('feed');
+
+  const user = await authenticator.isAuthenticated(request);
+
   if (feedParam) {
     const feed = await getFeed(feedParam);
 
-    return new Response(JSON.stringify({feed, feedName: feedParam}), {
+    return new Response(JSON.stringify({feed, feedName: feedParam, email: user?.email}), {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
@@ -42,7 +44,9 @@ export let loader: LoaderFunction = async ({request}) => {
     });
   }
 
-  return {}
+  return {
+    email: user?.email,
+  }
 };
 
 export type Feed = {
@@ -54,7 +58,7 @@ export type Feed = {
 }
 
 export default function Index() {
-  let data = useLoaderData<{feed?: Feed}>();
+  let data = useLoaderData<{feed?: Feed, email?: string}>();
 
   if (data.feed) {
     const feed = data.feed;
@@ -63,6 +67,9 @@ export default function Index() {
       <div id="feed">
         <Recents feedTitle={feed.title} feedUrl={data.feed.url} maxWidth="20%" />
         <div>
+          {data.email ? <>
+            Hi, {data.email}! <Link to="/logout">Logout</Link>
+          </> : <Link to="/login">Login</Link>}
           <Link to="/">{'< Return Home'}</Link>
           <h2>{feed.title}</h2>
           <h4>{feed.description}</h4>
@@ -81,6 +88,9 @@ export default function Index() {
   return (
     <div style={{maxWidth: '600px', margin: '0 auto'}}>
       <h1>Welcome to the RSS Reader</h1>
+      {data.email ? <>
+        Hi, {data.email}! <Link to="/logout">Logout</Link>
+      </> : <Link to="/login">Login</Link>}
       <Form method="get">
         <label>{'RSS Feed:'} <input type="text" name="feed"/></label>
         <button type="submit">{'Go'}</button>
