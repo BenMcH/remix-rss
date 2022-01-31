@@ -126,7 +126,7 @@ export default function Index() {
       {data.email ? <>
         Hi, {data.email}! <Link to='/logout'>Logout</Link>
       </> : <Link to='/login'>Login</Link>}
-      <Form method="get" className="flex flex-row gap-4">
+      <Form method="post" className="flex flex-row gap-4">
         <label>{'RSS Feed:'} <input type="text" name="feed" className="border" /></label>
         <button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600">{'Go'}</button>
       </Form>
