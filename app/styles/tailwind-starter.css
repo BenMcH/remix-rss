@@ -8,6 +8,10 @@ body {
   @apply h-full;
 }
 
+body {
+	@apply px-2;
+}
+
 input {
 	@apply text-slate-800 px-2 py-1;
 }

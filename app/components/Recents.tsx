@@ -4,7 +4,7 @@ import { Form } from 'remix';
 
 const Recents: React.FC<{feeds: Feed[]}> = ({feeds}) => {
   return (
-    <section id="recents" className="max-w-sm md:px-4 mt-4">
+    <section id="recents" className="max-w-sm md:px-4">
       <h2>Subscriptions</h2>
       <ol className="flex flex-col gap-3">
         {feeds.map((recent) => (

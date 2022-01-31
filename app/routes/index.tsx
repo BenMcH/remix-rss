@@ -102,10 +102,10 @@ export default function Index() {
       <div className="flex flex-col-reverse md:flex-row">
         <Recents feeds={data.userFeeds} />
         <div>
-          <Link to='/'>{'< Return Home'}</Link>
-          {data.email ? <>
-            Hi, {data.email}! <Link to='/logout'>Logout</Link>
-          </> : <Link to='/login'>Login</Link>}
+          <p className="flex justify-between">
+            <Link to='/'>{'< Return Home'}</Link>
+            {data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}
+          </p>
           <h2 className="text-2xl font-bold">{feed.title}</h2>
           {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
           {feed.image && <img className="max-w-xl" src={feed.image} />}
@@ -121,11 +121,9 @@ export default function Index() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl ">Welcome to the RSS Reader</h1>
-      {data.email ? <>
-        Hi, {data.email}! <Link to='/logout'>Logout</Link>
-      </> : <Link to='/login'>Login</Link>}
+    <div className="max-w-2xl mx-auto flex flex-col gap-2">
+      <h1>RSS Reader</h1>
+      {data.email ? <p> Hi, {data.email}! <Link to='/logout'>Logout</Link> </p> : <Link to='/login'>Login</Link>}
       <Form method="post" className="flex flex-row gap-4">
         <label>{'RSS Feed:'} <input type="text" name="feed" className="border" /></label>
         <button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600">{'Go'}</button>
