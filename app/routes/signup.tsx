@@ -48,6 +48,7 @@ export default function Index() {
         <div><button type='submit'>{'Sign Up'}</button></div>
 		<p>{data?.error}</p>
 		<p>Already a member? <Link to='/login'>Login</Link></p>
+		<p><Link to="/">Home</Link></p>
       </Form>
   )
 }

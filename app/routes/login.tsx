@@ -44,6 +44,7 @@ export default function Screen() {
 	  <p>{data?.error}</p>
 
 	  <p>Not a member? <Link to='/signup'>Sign up now!</Link></p>
+	  <p><Link to="/">Home</Link></p>
     </Form>
   );
 }
