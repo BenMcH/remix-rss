@@ -10,7 +10,6 @@ generator client {
 model User {
   id                String             @id @default(uuid())
   email             String             @unique
-  passwordHash      String
   feedSubscriptions FeedSubscription[]
 }
 

@@ -1,36 +1,33 @@
-import bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { Authenticator } from 'remix-auth';
-import { FormStrategy } from 'remix-auth-form';
+import { Auth0Strategy } from 'remix-auth-auth0';
 import { sessionStorage } from '~/services/session.server';
-import { getUserByEmail } from '~/utils/user.server';
+import { createUser, getUserByEmail } from '~/utils/user.server';
 
 export let authenticator = new Authenticator<User>(sessionStorage, {
   sessionErrorKey: 'error',
 });
 
-authenticator.use(
-  new FormStrategy(async ({ form }) => {
-    let email = form.get('email')?.toString();
-    let password = form.get('password')?.toString();
+if (!process.env.CLIENT_ID) {
+	throw new Error('Missing CLIENT_ID env');
+}
 
-	if (!email || !password) {
-		return Promise.reject('Email and password are required');
-	}
+if (!process.env.CLIENT_SECRET) {
+	throw new Error('Missing CLIENT_SECRET env');
+}
 
-    let user = await getUserByEmail(email);
+let auth0Strategy = new Auth0Strategy(
+  {
+    callbackURL: "http://localhost:3000/auth0_callback",
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    domain: "mchone.us.auth0.com",
+  },
+  async ({ accessToken, refreshToken, extraParams, profile }) => {
+	  let email = profile.emails[0].value;
 
-	if (!user) {
-		return Promise.reject('User not found');
-	}
-
-	const passwordsMatch = await bcrypt.compare(password, user.passwordHash);
-
-	if (!passwordsMatch) {
-		return Promise.reject('Invalid password');
-	}
-
-    return user;
-  }),
-  'user-pass'
+	  return await getUserByEmail(email) ||  createUser(email);
+  }
 );
+
+authenticator.use(auth0Strategy);

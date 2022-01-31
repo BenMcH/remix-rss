@@ -1,4 +1,4 @@
-import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction, ActionFunction, redirect, useActionData } from 'remix';
+import { MetaFunction, LoaderFunction, Form, Link, HeadersFunction, ActionFunction, redirect } from 'remix';
 import { useLoaderData } from 'remix';
 
 import { getFeed } from '~/services/rss.server';
@@ -93,7 +93,6 @@ export type InternalFeed = {
 
 export default function Index() {
   let data = useLoaderData<{feed?: InternalFeed, email?: string, userFeeds: Feed[]}>();
-  let actionData = useActionData();
 
   if (data.feed) {
     const feed = data.feed;

@@ -1,22 +1,11 @@
-import { Form, ActionFunction, LoaderFunction, useActionData, Link } from 'remix';
-import { AuthorizationError } from 'remix-auth';
+import { Form, ActionFunction, LoaderFunction, Link } from 'remix';
 import { authenticator } from '~/services/auth.server';
 
 export let action: ActionFunction = async ({ request }) => {
-  try {
-	const user = await authenticator.authenticate('user-pass', request, {
-		successRedirect: '/',
-		throwOnError: true,
-	});
-  } catch (error) {
-	  if (error instanceof AuthorizationError) {
-		  return {
-			  error: 'Invalid email or password',
-		  }
-	  }
-
-	  throw error;
-  }
+    await authenticator.authenticate('auth0', request, {
+      successRedirect: '/',
+      failureRedirect: '/login'
+    });
 };
 
 export let loader: LoaderFunction = async ({ request }) => {
@@ -28,23 +17,13 @@ export let loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Screen() {
-	let data = useActionData()
-	console.log({data})
   return (
     <Form method='post' style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
-	  <h1>Login</h1>
-      <label>Email: <input type='email' name='email' required /></label>
-      <label>Password: <input
-        type='password'
-        name='password'
-        autoComplete='current-password'
-        required
-      /></label>
-      <button>Sign In</button>
-	  <p>{data?.error}</p>
+      <h1>Login</h1>
+      <button>Sign In With Auth0</button>
 
-	  <p>Not a member? <Link to='/signup'>Sign up now!</Link></p>
-	  <p><Link to="/">Home</Link></p>
+      <p>Not a member? <Link to='/signup'>Sign up now!</Link></p>
+      <p><Link to="/">Home</Link></p>
     </Form>
   );
 }

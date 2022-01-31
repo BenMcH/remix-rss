@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt'
 import { Feed, User } from '@prisma/client';
 import { db } from './db.server';
 
@@ -16,11 +15,10 @@ function getUserByEmail(email: string) {
 	});
 }
 
-async function createUser(email: string, password: string) {
+async function createUser(email: string) {
 	return db.user.create({
 		data: {
-			email,
-			passwordHash: await bcrypt.hash(password, 10)
+			email
 		}
 	})
 }
