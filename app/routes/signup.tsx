@@ -1,6 +1,5 @@
 import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction, ActionFunction, redirect, useActionData, json } from 'remix';
 
-import stylesUrl from '~/styles/index.css';
 import { createUser } from '~/utils/user.server';
 import { authenticator } from '~/services/auth.server';
 
@@ -9,10 +8,6 @@ export let meta: MetaFunction = ({data}) => {
   return {
     title: 'RSS Reader'
   };
-};
-
-export let links: LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: stylesUrl }];
 };
 
 export let action: ActionFunction = async ({request}) => {

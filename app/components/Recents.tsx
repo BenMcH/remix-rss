@@ -4,8 +4,9 @@ import { Form } from 'remix';
 
 const Recents: React.FC<{ maxWidth?: string, feeds: Feed[]}> = ({maxWidth = '100%', feeds}) => {
   return (
-    <section id='recents' style={{maxWidth, marginRight: '2em'}}>
-      <ol>
+    <section id="recents" className="max-w-sm md:px-4">
+      <h2>Subscriptions</h2>
+      <ol className="flex flex-col gap-3">
         {feeds.map((recent) => (
           <li key={recent.url}>
             <a href={`/?feed=${recent.url}`}>{recent.title}</a>

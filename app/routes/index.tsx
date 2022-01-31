@@ -1,7 +1,6 @@
 import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction, ActionFunction, redirect, useActionData } from 'remix';
 import { useLoaderData } from 'remix';
 
-import stylesUrl from '~/styles/index.css';
 import { getFeed } from '~/services/rss.server';
 import Recents from '~/components/Recents';
 import FeedItem, { FeedItemPost } from '~/components/FeedItem';
@@ -55,10 +54,6 @@ export let action: ActionFunction = async ({request}) => {
   return redirect(`/?feed=${feed}`);
 }
 
-export let links: LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: stylesUrl }];
-};
-
 export let headers: HeadersFunction = ({loaderHeaders}) => ({
   'Cache-Control': loaderHeaders.get('Cache-Control') || 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
 })
@@ -104,18 +99,18 @@ export default function Index() {
     const feed = data.feed;
 
     return (
-      <div id='feed'>
+      <div className="flex flex-col-reverse md:flex-row">
         <Recents feeds={data.userFeeds} />
         <div>
           <Link to='/'>{'< Return Home'}</Link>
           {data.email ? <>
             Hi, {data.email}! <Link to='/logout'>Logout</Link>
           </> : <Link to='/login'>Login</Link>}
-          <h2>{feed.title}</h2>
-          <h4>{feed.description}</h4>
-          <img style={{maxWidth: '600px'}} src={feed.image} />
+          <h2 className="text-2xl font-bold">{feed.title}</h2>
+          {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
+          {feed.image && <img className="max-w-xl" src={feed.image} />}
 
-          <ul>
+          <ul className="mt-4 flex flex-col gap-2">
           {feed.items.map(item => (
             <FeedItem item={item} key={item.isoDate} />
           ))}
@@ -126,15 +121,14 @@ export default function Index() {
   }
 
   return (
-    <div style={{maxWidth: '600px', margin: '0 auto'}}>
-      <h1>Welcome to the RSS Reader</h1>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl ">Welcome to the RSS Reader</h1>
       {data.email ? <>
         Hi, {data.email}! <Link to='/logout'>Logout</Link>
       </> : <Link to='/login'>Login</Link>}
-      <Form method='post'>
-        <label>{'RSS Feed:'} <input type='text' name='feed'required /></label>
-        <button type='submit'>{'Subscribe'}</button>
-        {actionData?.error && <span>&nbsp;{actionData.error}</span>}
+      <Form method="get" className="flex flex-row gap-4">
+        <label>{'RSS Feed:'} <input type="text" name="feed" className="border" /></label>
+        <button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600">{'Go'}</button>
       </Form>
 
       <Recents feeds={data.userFeeds} />
