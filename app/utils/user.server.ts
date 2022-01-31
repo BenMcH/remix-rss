@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { User } from '@prisma/client';
+import { Feed, User } from '@prisma/client';
 import { db } from './db.server';
 
 
@@ -25,7 +25,46 @@ async function createUser(email: string, password: string) {
 	})
 }
 
+async function getSubscribedFeeds(user: User) {
+	return db.feedSubscription.findMany({
+		where: {
+			user
+		},
+		include: {
+			feed: true
+		}
+	}).then(subscriptions => subscriptions.map(subscription => subscription.feed));
+}
+
+async function deleteSubscription(user: User | null, feedId: string) {
+	if (!user) return;
+	await db.feedSubscription.deleteMany({
+		where: {
+			feedId,
+			userId: user.id
+		}
+	});
+}
+
+async function createFeedSubscription(user: User, feed: Feed) {
+	await db.feedSubscription.deleteMany({
+		where: {
+			userId: user.id,
+			feedId: feed.id
+		}
+	});
+	return db.feedSubscription.create({
+		data: {
+			userId: user.id,
+			feedId: feed.id
+		}
+	})
+}
+
 export {
 	createUser,
-	getUserByEmail
+	getUserByEmail,
+	getSubscribedFeeds,
+	createFeedSubscription,
+	deleteSubscription
 }

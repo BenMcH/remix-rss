@@ -8,7 +8,23 @@ generator client {
 }
 
 model User {
-  id    String     @id @default(uuid())
-  email String  @unique
-  passwordHash String
+  id                String             @id @default(uuid())
+  email             String             @unique
+  passwordHash      String
+  feedSubscriptions FeedSubscription[]
+}
+
+model Feed {
+  id               String             @id @default(uuid())
+  title            String
+  url              String @unique
+  FeedSubscription FeedSubscription[]
+}
+
+model FeedSubscription {
+  id     String @id @default(uuid())
+  feedId String
+  userId String
+  feed   Feed   @relation(fields: [feedId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 }

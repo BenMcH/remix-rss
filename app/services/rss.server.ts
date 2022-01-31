@@ -1,11 +1,11 @@
 import Parser from 'rss-parser';
-import { Feed } from '~/routes';
+import { InternalFeed } from '~/routes';
 
 const parser = new Parser();
 
-let feeds = new Map<string, Feed>();
+let feeds = new Map<string, InternalFeed>();
 
-export const getFeed = async (url: string): Promise<Feed>  => {
+export const getFeed = async (url: string): Promise<InternalFeed>  => {
   const existingFeed = feeds.get(url);
 
   if (existingFeed) {
@@ -14,7 +14,7 @@ export const getFeed = async (url: string): Promise<Feed>  => {
 
   const feed = await parser.parseURL(url)
 
-  const newFeed: Feed = {
+  const newFeed: InternalFeed = {
     title: feed.title || '',
     description: feed.description || '',
     items: feed.items.map((item) => ({
