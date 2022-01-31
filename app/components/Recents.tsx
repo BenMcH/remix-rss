@@ -36,10 +36,9 @@ const Recents: React.FC<{feedTitle?: string, feedUrl?: string, maxWidth?: string
   }, [feedTitle, feedUrl]);
 
   return (
-    <section id="recents" style={{maxWidth, marginRight: '2em'}}>
-      <h4>{'recent feeds - '}<a href="#" onClick={reset}>{'Clear Recents'}</a></h4>
-
-      <ol>
+    <section id="recents" className="max-w-sm md:px-4">
+      <h2>Subscriptions</h2>
+      <ol className="flex flex-col gap-3">
         {recents.map((recent) => (
           <li key={recent.url}>
             <a href={`/?feed=${recent.url}`}>{recent.name}</a>

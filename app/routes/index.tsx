@@ -2,7 +2,6 @@ import Parser from 'rss-parser';
 import { MetaFunction, LinksFunction, LoaderFunction, Form, Link, HeadersFunction } from "remix";
 import { useLoaderData } from "remix";
 
-import stylesUrl from "~/styles/index.css";
 import { getFeed } from '~/services/rss.server';
 import Recents from '~/components/Recents';
 import FeedItem, { FeedItemPost } from '~/components/FeedItem';
@@ -18,10 +17,6 @@ export let meta: MetaFunction = ({data}) => {
     title: data.feed?.title || "RSS Reader",
     description: data.feed?.description || "Read an rss feed in peace"
   };
-};
-
-export let links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: stylesUrl }];
 };
 
 export let headers: HeadersFunction = ({loaderHeaders}) => ({
@@ -60,18 +55,17 @@ export default function Index() {
     const feed = data.feed;
 
     return (
-      <div id="feed">
+      <div className="flex flex-col-reverse md:flex-row">
         <Recents feedTitle={feed.title} feedUrl={data.feed.url} maxWidth="20%" />
         <div>
           <Link to="/">{'< Return Home'}</Link>
-          <h2>{feed.title}</h2>
-          <h4>{feed.description}</h4>
-          <img style={{maxWidth: '600px'}} src={feed.image} />
-
-          <ul>
-          {feed.items.map(item => (
-            <FeedItem item={item} key={item.isoDate} />
-          ))}
+          <h2 className="text-2xl font-bold">{feed.title}</h2>
+          {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
+          {feed.image && <img className="max-w-xl" src={feed.image} />}
+          <ul className="mt-4 flex flex-col gap-2">
+            {feed.items.map(item => (
+              <FeedItem item={item} key={item.isoDate} />
+            ))}
           </ul>
         </div>
       </div>
@@ -79,11 +73,11 @@ export default function Index() {
   }
 
   return (
-    <div style={{maxWidth: '600px', margin: '0 auto'}}>
-      <h1>Welcome to the RSS Reader</h1>
-      <Form method="get">
-        <label>{'RSS Feed:'} <input type="text" name="feed"/></label>
-        <button type="submit">{'Go'}</button>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl ">Welcome to the RSS Reader</h1>
+      <Form method="get" className="flex flex-row gap-4">
+        <label>{'RSS Feed:'} <input type="text" name="feed" className="border" /></label>
+        <button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600">{'Go'}</button>
       </Form>
 
       <Recents />
