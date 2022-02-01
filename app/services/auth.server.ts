@@ -18,7 +18,7 @@ if (!process.env.CLIENT_SECRET) {
 
 let auth0Strategy = new Auth0Strategy(
   {
-    callbackURL: `${process.env.HOST || 'http://localhost:3000'}/auth0_callback`,
+    callbackURL: `${getHost()}/auth0_callback`,
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     domain: "mchone.us.auth0.com",
@@ -31,3 +31,7 @@ let auth0Strategy = new Auth0Strategy(
 );
 
 authenticator.use(auth0Strategy);
+
+export function getHost() {
+  return process.env.HOST || 'http://localhost:3000';
+}
