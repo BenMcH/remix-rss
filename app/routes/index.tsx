@@ -54,10 +54,6 @@ export let action: ActionFunction = async ({request}) => {
   return redirect(`/?feed=${feed}`);
 }
 
-export let headers: HeadersFunction = ({loaderHeaders}) => ({
-  'Cache-Control': loaderHeaders.get('Cache-Control') || 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
-})
-
 export let loader: LoaderFunction = async ({request}) => {
   const {searchParams} = new URL(request.url);
   const feedParam = searchParams.get('feed');
@@ -72,7 +68,6 @@ export let loader: LoaderFunction = async ({request}) => {
     return new Response(JSON.stringify({feed, feedName: feedParam, email: user?.email, userFeeds}), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=60, s-max-age=300, stale-while-revalidate=300'
       }
     });
   }
