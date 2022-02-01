@@ -22,6 +22,19 @@ spec:
         command: ["npm"]
         args:
           - start
-        envFrom:
-          - secretRef:
-              name: rss-secrets
+        env: 
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: rss-secrets
+                key: CLIENT_ID
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: rss-secrets
+                key: CLIENT_SECRET
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: rss-secrets
+                key: DATABASE_URL
