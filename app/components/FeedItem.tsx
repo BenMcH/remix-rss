@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export type FeedItemPost = {
 	contentSnippet: string;
-	isoDate: string;
+	date: string;
 	title: string
 	link: string;
 	content: string;
@@ -15,9 +15,15 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
 
   const [showAllContent, setShowAllContent] = useState(false);
 
+  const renderedDate = useMemo(() => {
+    const date = new Date(item.date);
+    return date.toLocaleString(); 
+  }, [item.date]);
+
   return (
-    <li key={item.isoDate}>
+    <li key={item.date}>
       <h3 className="text-lg font-bold">{item.title}</h3>
+      <h4 className="text-sm font-bold">{renderedDate}</h4>
       <p>
         {contentSnippet !== item.content && (
           <>
