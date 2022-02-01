@@ -22,3 +22,6 @@ spec:
         command: ["npm"]
         args:
           - start
+        envFrom:
+          - secretRef:
+            name: rss-secrets
