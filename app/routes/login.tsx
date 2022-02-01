@@ -20,9 +20,8 @@ export default function Screen() {
   return (
     <Form method='post' style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
       <h1>Login</h1>
-      <button>Sign In With Auth0</button>
+      <button className="px-4 border bg-slate-200 dark:bg-slate-600">Sign In With Auth0</button>
 
-      <p>Not a member? <Link to='/signup'>Sign up now!</Link></p>
       <p><Link to="/">Home</Link></p>
     </Form>
   );
