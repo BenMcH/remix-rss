@@ -24,4 +24,4 @@ spec:
           - start
         envFrom:
           - secretRef:
-            name: rss-secrets
+              name: rss-secrets
