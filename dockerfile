@@ -1,8 +1,11 @@
-FROM node:16.1.0-alpine
+FROM node:16.13.2-alpine
 
-ADD . .
+ADD package.json package.json
+ADD package-lock.json package-lock.json
 
 RUN npm i
+
+ADD . .
 
 RUN npm run build
 
