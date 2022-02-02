@@ -19,7 +19,7 @@ export const getFeed = async (url: string): Promise<InternalFeed>  => {
     description: feed.description || '',
     items: feed.items.map((item) => ({
       content: item.content || '',
-      date: new Date(item.isoDate || item.pubDate || '').toISOString(),
+      date: item.isoDate || item.pubDate ? new Date(item.isoDate || item.pubDate!).toISOString() : '',
       link: item.link || '',
       title: item.title || '',
       contentSnippet: item.contentSnippet || '',
