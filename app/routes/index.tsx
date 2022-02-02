@@ -118,6 +118,7 @@ export default function Index() {
       <Form method="post" className="flex flex-row gap-4">
         <label>{'RSS Feed:'} <input type="text" name="feed" className="border" /></label>
         <button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600">{'Go'}</button>
+        <Link to="/all_feeds">{'All Feeds'}</Link>
       </Form>
 
       <Recents feeds={data.userFeeds} />
