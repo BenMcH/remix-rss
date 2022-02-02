@@ -10,7 +10,7 @@ function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean
   return (
     <tr key={recent.url}>
       <td className={!firstFeed ? `pt-4` : ''}>
-        <a href={`/?feed=${recent.url}`}>{recent.title}</a>
+        <a href={`/?feed=${recent.url}`} className="mr-2">{recent.title}</a>
       </td>
       <td className={!firstFeed ? `pt-4` : ''}>
         <fetcher.Form method="post">
@@ -33,9 +33,9 @@ const Recents: React.FC<{feeds: Feed[]}> = ({feeds}) => {
     return <></>
   }
   return (
-    <section id="recents" className="max-w-sm md:px-4">
+    <section id="recents" className="max-w-sm md:px-4 md:max-h-screen md:overflow-y-auto">
       <h2>Subscriptions</h2>
-      <table>
+      <table className="mt-4">
         {feeds.map((recent) => (
           <SubscriptionForm recent={recent} firstFeed={recent === feeds[0]} />
         ))}
