@@ -45,12 +45,6 @@ export let action: ActionFunction = async ({request}) => {
     }
   }
 
-  let dbFeed = await feedService.getFeed(feed);
-
-  if (user && dbFeed) {
-    await userService.createFeedSubscription(user, dbFeed);
-  }
-
   return redirect(`/?feed=${feed}`);
 }
 
@@ -65,11 +59,14 @@ export let loader: LoaderFunction = async ({request}) => {
   if (feedParam) {
     const feed = await getFeed(feedParam);
 
-    return new Response(JSON.stringify({feed, feedName: feedParam, email: user?.email, userFeeds}), {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+    const dbFeed = await feedService.getFeed(feedParam);
+
+    if (user && dbFeed) {
+      await userService.createFeedSubscription(user, dbFeed);
+    }
+
+
+    return {feed, feedName: feedParam, email: user?.email, userFeeds}
   }
 
   return {
@@ -106,7 +103,7 @@ export default function Index() {
 
           <ul className="mt-4 flex flex-col gap-2">
           {feed.items.map(item => (
-            <FeedItem item={item} key={item.isoDate} />
+            <FeedItem item={item} key={item.link} />
           ))}
           </ul>
         </div>
