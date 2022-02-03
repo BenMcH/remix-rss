@@ -35,7 +35,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
         <p>
           <td>
             {contentSnippet !== item.content && (
-              <a href='#' onClick={(e) => {e.preventDefault(); setShowAllContent(!showAllContent)}}>{showAllContent ? 'Read Less' : 'Read More'}</a>
+              <button type="button" onClick={() => setShowAllContent(!showAllContent)}>{showAllContent ? 'Read Less' : 'Read More'}</button>
             )}
           </td>
           <td className="pl-4">
