@@ -31,7 +31,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
   return (
     <>
       <tr className={hasOpened ? "" : "border-l"} onClick={() => setOpen(!open)}>
-        <td className="truncate max-w-screen-sm pl-4  "><span className="text-md font-bold">{item.title}</span> {!open && <span className="text-xs font-light">{contentSnippet}</span>}</td>
+        <td className="truncate pl-4  max-w-sm md:max-w-lg lg:max-w-2xl xl:max-w-4xl"><span className="text-sm font-bold">{item.title}</span> {!open && <span className="text-xs font-light">{contentSnippet}</span>}</td>
         <td className="text-xs pl-4">{renderedDate}</td>
       </tr>
       {open &&(

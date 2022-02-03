@@ -92,7 +92,7 @@ export default function Index() {
     return (
       <div className="flex flex-col-reverse md:flex-row gap-2">
         <Recents feeds={data.userFeeds} />
-        <div className="flex-grow">
+        <div>
           <p className="flex justify-between">
             <Link to='/'>{'< Return Home'}</Link>
             {data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}
