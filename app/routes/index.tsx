@@ -92,7 +92,7 @@ export default function Index() {
     return (
       <div className="flex flex-col-reverse md:flex-row gap-2">
         <Recents feeds={data.userFeeds} />
-        <div className="flex-grow max-w-4xl">
+        <div className="flex-grow">
           <p className="flex justify-between">
             <Link to='/'>{'< Return Home'}</Link>
             {data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}
@@ -101,10 +101,12 @@ export default function Index() {
           {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
           {feed.image && <img className="max-w-xl" src={feed.image} />}
 
-          <table className="mt-4 flex flex-col gap-2">
-          {feed.items.map(item => (
-            <FeedItem item={item} key={item.link} />
-          ))}
+          <table className="w-full">
+            <tbody>
+              {feed.items.map(item => (
+                <FeedItem item={item} key={item.link} />
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
