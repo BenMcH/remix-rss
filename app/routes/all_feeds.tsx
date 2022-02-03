@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { LoaderFunction, useLoaderData } from "remix";
+import { LoaderFunction, useLoaderData, Link } from "remix";
 import { db } from "~/utils/db.server";
 
 export let loader: LoaderFunction = async ({request}) => {
