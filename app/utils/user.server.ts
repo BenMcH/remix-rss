@@ -30,6 +30,11 @@ async function getSubscribedFeeds(user: User) {
 		},
 		include: {
 			feed: true
+		},
+		orderBy: {
+			feed: {
+				title: 'asc'
+			}
 		}
 	}).then(subscriptions => subscriptions.map(subscription => subscription.feed));
 }
