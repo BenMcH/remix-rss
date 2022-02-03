@@ -21,23 +21,29 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
   }, [item.date]);
 
   return (
-    <li key={item.date}>
-      <h3 className="text-lg font-bold">{item.title}</h3>
-      <h4 className="text-sm font-bold">{renderedDate}</h4>
-      <p>
-        {contentSnippet !== item.content && (
-          <>
-            <a href='#' onClick={(e) => {e.preventDefault(); setShowAllContent(!showAllContent)}}>{showAllContent ? 'Read Less' : 'Read More'}</a>
-            {' | '}
-          </>
-        )}
-        <a href={item.link} target='_blank'>{'Open Link'}</a>
-      </p>
-      {showAllContent ? 
-        <p className="pl-4 border-l border-l-slate-500" dangerouslySetInnerHTML={{__html: item.content || ''}} />  
-        : <p className="pl-4 border-l border-l-slate-500">{contentSnippet}</p>
-      }
-    </li>
+    <>
+      <tr>
+        <td className="text-lg font-bold"> {item.title} </td>
+        <td className="text-sm font-bold">{renderedDate}</td>
+      </tr>
+      <tr>
+        <td colSpan={2} className="pl-4 border-l border-l-slate-500">
+          {showAllContent ?  <p dangerouslySetInnerHTML={{__html: item.content || ''}} /> : <>{contentSnippet}</>}
+        </td>
+      </tr>
+      <tr>
+        <p>
+          <td>
+            {contentSnippet !== item.content && (
+              <a href='#' onClick={(e) => {e.preventDefault(); setShowAllContent(!showAllContent)}}>{showAllContent ? 'Read Less' : 'Read More'}</a>
+            )}
+          </td>
+          <td className="pl-4">
+            <a href={item.link} target='_blank'>{'Open Link'}</a>
+          </td>
+        </p>
+      </tr>
+    </>
   )
 }
 

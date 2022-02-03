@@ -101,11 +101,11 @@ export default function Index() {
           {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
           {feed.image && <img className="max-w-xl" src={feed.image} />}
 
-          <ul className="mt-4 flex flex-col gap-2">
+          <table className="mt-4 flex flex-col gap-2">
           {feed.items.map(item => (
             <FeedItem item={item} key={item.link} />
           ))}
-          </ul>
+          </table>
         </div>
       </div>
     );
