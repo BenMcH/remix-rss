@@ -1,5 +1,5 @@
 import { Feed } from '@prisma/client';
-import { Form, useFetcher } from 'remix';
+import { useFetcher } from 'remix';
 
 function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean}) {
   let fetcher = useFetcher();
@@ -13,12 +13,11 @@ function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean
         <a href={`/?feed=${recent.url}`} className="mr-2">{recent.title}</a>
       </td>
       <td className={!firstFeed ? `pt-4` : ''}>
-        <fetcher.Form method="post">
+        <fetcher.Form method="post" action="/?index">
           <input type="hidden" name="id" value={recent.id} />
           <button
             aira-label={`Unsubscribe from ${recent.title}`}
             className="px-4 border bg-slate-200 disabled:bg-slate-400 dark:bg-slate-600 disabled:dark:bg-slate-800"
-            disabled={fetcher.state != 'idle'}
             name="_action"
             value="delete_subscription"
             type="submit">X</button>
