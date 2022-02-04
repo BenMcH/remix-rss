@@ -72,7 +72,7 @@ export default function FeedLayout() {
             </section>
             <span className="text-right ">{data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}</span>
           </div>
-		  <Outlet />k
+          <Outlet />
           <section className="lg:hidden">
             <FeedSearch />
           </section>
