@@ -1,5 +1,5 @@
 import { Feed } from '@prisma/client';
-import { useFetcher } from 'remix';
+import { useFetcher, Link } from 'remix';
 
 function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean}) {
   let fetcher = useFetcher();
@@ -10,7 +10,7 @@ function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean
   return (
     <tr key={recent.url}>
       <td className={!firstFeed ? `pt-4` : ''}>
-        <a href={`/?feed=${recent.url}`} className="mr-2">{recent.title}</a>
+        <Link to={`/feed?feed=${recent.url}`} className="mr-2">{recent.title}</Link>
       </td>
       <td className={!firstFeed ? `pt-4` : ''}>
         <fetcher.Form method="post" action="/?index">
