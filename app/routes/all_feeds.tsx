@@ -25,7 +25,7 @@ export default function FeedList() {
 			<h1>All known feeds</h1>
 			<ul className="mt-4">
 				{data.map((item) => ( 
-					<li key={item.url}><Link to={`/?feed=${item.url}`}>{item.title}</Link></li>
+					<li key={item.url}><Link to={`/feed?feed=${item.url}`}>{item.title}</Link></li>
 				))}
 			</ul>
 		</main>
