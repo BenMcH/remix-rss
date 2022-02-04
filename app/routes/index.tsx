@@ -1,13 +1,12 @@
-import { MetaFunction, LoaderFunction, Form, Link, HeadersFunction, ActionFunction, redirect } from 'remix';
+import { MetaFunction, LoaderFunction, Link, ActionFunction, redirect } from 'remix';
 import { useLoaderData } from 'remix';
 
-import { getFeed } from '~/services/rss.server';
 import Recents from '~/components/Recents';
 import FeedItem, { FeedItemPost } from '~/components/FeedItem';
 import { authenticator } from '~/services/auth.server';
 import * as userService from '~/utils/user.server';
-import * as feedService from '~/utils/feed.server';
 import { Feed } from '@prisma/client';
+import FeedSearch from '~/components/FeedSearch';
 
 export interface IFeed {
   url: string
@@ -45,29 +44,13 @@ export let action: ActionFunction = async ({request}) => {
     }
   }
 
-  return redirect(`/?feed=${feed}`);
+  return redirect(`/feed?feed=${feed}`);
 }
 
 export let loader: LoaderFunction = async ({request}) => {
-  const {searchParams} = new URL(request.url);
-  const feedParam = searchParams.get('feed');
-
   const user = await authenticator.isAuthenticated(request);
 
   const userFeeds = user ? await userService.getSubscribedFeeds(user) : [];
-
-  if (feedParam) {
-    const feed = await getFeed(feedParam);
-
-    const dbFeed = await feedService.getFeed(feedParam);
-
-    if (user && dbFeed) {
-      await userService.createFeedSubscription(user, dbFeed);
-    }
-
-
-    return {feed, feedName: feedParam, email: user?.email, userFeeds}
-  }
 
   return {
     email: user?.email,
@@ -93,10 +76,13 @@ export default function Index() {
       <div className="flex flex-col-reverse md:flex-row gap-2">
         <Recents feeds={data.userFeeds} />
         <div className="flex-grow">
-          <p className="flex justify-between">
-            <Link to='/'>{'< Return Home'}</Link>
+          <div className="flex justify-between">
+            <Link to='/'>{'< Home'}</Link>
+            <section className="hidden lg:block">
+              <FeedSearch />
+            </section>
             <span className="text-right ">{data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}</span>
-          </p>
+          </div>
           <h2 className="mt-4">{feed.title}</h2>
           {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
           {feed.image && <img className="max-w-xl" src={feed.image} />}
@@ -108,6 +94,9 @@ export default function Index() {
               ))}
             </tbody>
           </table>
+          <section className="lg:hidden">
+            <FeedSearch />
+          </section>
         </div>
       </div>
     );
@@ -116,12 +105,7 @@ export default function Index() {
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-2">
       <h1>RSS Reader</h1>
-      {data.email ? <p> Hi, {data.email}! <Link to='/logout'>Logout</Link> </p> : <Link to='/login'>Login</Link>}
-      <Form method="post" className="flex flex-row gap-4">
-        <label>{'RSS Feed:'} <input type="text" name="feed" className="border" /></label>
-        <button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600">{'Go'}</button>
-        <Link to="/all_feeds">{'All Feeds'}</Link>
-      </Form>
+      <FeedSearch />
 
       <Recents feeds={data.userFeeds} />
     </div>

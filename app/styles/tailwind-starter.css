@@ -17,7 +17,7 @@ input {
 }
 
 a {
-	@apply underline;
+	@apply underline underline-offset-4;
 	@apply text-blue-500 hover:text-blue-600;
 	@apply dark:text-white dark:hover:text-white;
 }
