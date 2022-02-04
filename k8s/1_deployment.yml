@@ -40,3 +40,8 @@ spec:
               secretKeyRef:
                 name: rss-secrets
                 key: DATABASE_URL
+          - name: SESSION_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: rss-secrets
+                key: SESSION_SECRET
