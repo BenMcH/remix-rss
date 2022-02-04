@@ -24,7 +24,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
     <>
       <tr className="cursor-pointer border-t" onClick={() => setOpen(!open)}>
         <td className={`${open ? 'pt-2' : 'py-2'} md:truncate md:max-w-screen-2xl`}><span className="pl-2 text-sm font-bold">{item.title}</span> {!open && <span className="text-xs font-light hidden md:inline">{contentSnippet}</span>}</td>
-        <td className="py-2 text-xs pl-4 text-right">{renderedDate}</td>
+        <td className={`${open ? 'pt-2' : 'py-2'} text-xs pl-4 text-right`}>{renderedDate}</td>
       </tr>
       {open &&(
         <>
