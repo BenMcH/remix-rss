@@ -1,4 +1,4 @@
-import { MetaFunction, LoaderFunction, Link, Outlet } from 'remix';
+import { MetaFunction, LoaderFunction, Link, Outlet, redirect } from 'remix';
 import { useLoaderData } from 'remix';
 
 import { getFeed } from '~/services/rss.server';
@@ -15,38 +15,12 @@ export interface IFeed {
   name: string
 }
 
-export let meta: MetaFunction = ({data}) => {
-  return {
-    title: data.feed.title,
-    description: data.feed.description
-  };
-};
-
 export let loader: LoaderFunction = async ({request}) => {
-  const {searchParams} = new URL(request.url);
-  const feedParam = searchParams.get('feed');
-
   const user = await authenticator.isAuthenticated(request);
 
   const userFeeds = user ? await userService.getSubscribedFeeds(user) : [];
 
-  if (feedParam) {
-    const feed = await getFeed(feedParam);
-
-    const dbFeed = await feedService.getFeed(feedParam);
-
-    if (user && dbFeed) {
-      await userService.createFeedSubscription(user, dbFeed);
-    }
-
-
-    return {feed, feedName: feedParam, email: user?.email, userFeeds}
-  }
-
-  return {
-    email: user?.email,
-    userFeeds
-  }
+  return {email: user?.email, userFeeds}
 };
 
 export type InternalFeed = {
@@ -58,8 +32,7 @@ export type InternalFeed = {
 }
 
 export default function FeedLayout() {
-	let data = useLoaderData<{feed: InternalFeed, email?: string, userFeeds: Feed[]}>();
-	let feed = data.feed;
+	let data = useLoaderData<{email?: string, userFeeds: Feed[]}>();
 
     return (
       <div className="flex flex-col-reverse md:flex-row gap-2">

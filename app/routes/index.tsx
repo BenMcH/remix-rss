@@ -104,6 +104,7 @@ export default function Index() {
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-2">
+      <p className="text-right ">{data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}</p>
       <h1>RSS Reader</h1>
       <FeedSearch />
 

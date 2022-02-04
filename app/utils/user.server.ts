@@ -50,17 +50,15 @@ async function deleteSubscription(user: User | null, feedId: string) {
 }
 
 async function createFeedSubscription(user: User, feed: Feed) {
-	await db.feedSubscription.deleteMany({
-		where: {
-			userId: user.id,
-			feedId: feed.id
-		}
-	});
+	let where = {userId: user.id, feedId: feed.id}
+	let dbFeedSubscription = await db.feedSubscription.findFirst({where});
+
+	if (dbFeedSubscription) {
+		return dbFeedSubscription
+	}
+
 	return db.feedSubscription.create({
-		data: {
-			userId: user.id,
-			feedId: feed.id
-		}
+		data: where
 	})
 }
 

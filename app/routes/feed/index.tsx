@@ -1,10 +1,18 @@
 import { getFeed } from '~/services/rss.server';
 import FeedItem from '~/components/FeedItem';
-import { LoaderFunction, redirect, useLoaderData } from "remix";
+import { LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
 import { authenticator } from "~/services/auth.server";
 import * as userService from '~/utils/user.server'
 import * as feedService from '~/utils/feed.server';
 import type { InternalFeed } from '~/routes';
+
+export let meta: MetaFunction = ({data}) => {
+  return {
+    title: data.feed?.title,
+    description: data.feed?.description
+  };
+};
+
 
 export let loader: LoaderFunction = async ({request}) => {
   const {searchParams} = new URL(request.url);
@@ -29,9 +37,13 @@ export let loader: LoaderFunction = async ({request}) => {
     await userService.createFeedSubscription(user, dbFeed);
   }
 
-  const feed = await getFeed(feedParam);
+  try {
+    const feed = await getFeed(feedParam);
 
-  return {feed, error: null}
+    return {feed, error: null}
+  } catch(error: any) {
+    return {feed: null, error: error.message}
+  }
 };
 
 type LoaderType = {feed: InternalFeed, error: null} | {feed: null, error: string}
