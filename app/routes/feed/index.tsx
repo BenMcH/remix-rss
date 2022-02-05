@@ -64,7 +64,7 @@ export default function Feed() {
           {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
           {feed.image && <img className="max-w-xl" src={feed.image} />}
 
-          <table className="w-full md:max-w-7xl">
+          <table className="w-full">
             <tbody>
               {feed.items.map(item => (
                 <FeedItem item={item} key={item.link} />
