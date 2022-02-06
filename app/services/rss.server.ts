@@ -1,9 +1,46 @@
 import Parser from 'rss-parser';
 import { InternalFeed } from '~/routes';
+import { db } from '~/utils/db.server';
 
 const parser = new Parser();
 
 let feeds = new Map<string, InternalFeed>();
+
+async function insertFeedPosts(feed: InternalFeed) {
+  const dbFeed = await db.feed.findFirst({
+    where: {
+      url: feed.url,
+    }, select: {
+      id: true,
+    }
+  });
+
+  if (dbFeed === null) {
+    return;
+  }
+
+  await Promise.all(
+    feed.items.map((post) => 
+      db.feedPost.upsert({
+        where: {
+          feedId_date_link: {
+            date: post.date,
+            feedId: dbFeed.id,
+            link: post.link,
+          }
+        },
+        create: {
+            feedId: dbFeed.id,
+            title: post.title,
+            link: post.link,
+            date: post.date,
+            content: post.content,
+            contentSnippet: post.contentSnippet,
+        },
+        update: {}
+      })
+  ));
+}
 
 export const getFeed = async (url: string): Promise<InternalFeed>  => {
   const existingFeed = feeds.get(url);
@@ -29,6 +66,8 @@ export const getFeed = async (url: string): Promise<InternalFeed>  => {
     }),
     url,
   }
+
+  await insertFeedPosts(newFeed);
 
   feeds.set(url, newFeed);
   setTimeout(() => feeds.delete(url), 60000);
