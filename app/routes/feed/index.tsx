@@ -54,6 +54,9 @@ export let loader: LoaderFunction = async ({request}) => {
             id: true,
             title: true,
             link: true,
+          },
+          orderBy: {
+            date: 'desc'
           }
         }
       }
