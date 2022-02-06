@@ -17,7 +17,8 @@ async function createFeed(url: string) {
 		return db.feed.create({
 			data: {
 				url,
-				title: feed.title
+				title: feed.title,
+				description: feed.description
 			}
 		})
 	}
