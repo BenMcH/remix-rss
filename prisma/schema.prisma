@@ -1,10 +1,10 @@
-datasource db {
-  provider = "postgres"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -16,8 +16,9 @@ model User {
 model Feed {
   id               String             @id @default(uuid())
   title            String
-  url              String @unique
+  url              String             @unique
   FeedSubscription FeedSubscription[]
+  FeedPost         FeedPost[]
 }
 
 model FeedSubscription {
@@ -26,4 +27,15 @@ model FeedSubscription {
   userId String
   feed   Feed   @relation(fields: [feedId], references: [id])
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model FeedPost {
+  id             String @id @default(uuid())
+  title          String
+  contentSnippet String
+  content        String
+  date           String
+  link           String
+  feed           Feed   @relation(fields: [feedId], references: [id])
+  feedId         String
 }
