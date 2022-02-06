@@ -25,7 +25,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
 
   return (
     <>
-      <tr className="cursor-pointer border-t" onClick={() => setOpen(!open)} onPointerEnter={() => !fetcher.data && fetcher.load(`/api/posts/${item.id}`)}>
+      <tr className="cursor-pointer border-t" onClick={() => setOpen(!open)} onPointerEnter={() => fetcher.state === 'idle' && !fetcher.data && fetcher.load(`/api/posts/${item.id}`)}>
         <td className={`${open ? 'pt-2' : 'py-2'} md:truncate md:max-w-screen-2xl`}><span className="pl-2 text-sm font-bold">{item.title}</span> {!open && <span className="text-xs font-light hidden md:inline">{contentSnippet}</span>}</td>
         <td className={`${open ? 'pt-2' : 'py-2'} text-xs pl-4 text-right`}>{renderedDate}</td>
       </tr>
@@ -33,7 +33,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
         <>
           <tr>
             <td colSpan={2} className="pl-2 border-l border-l-slate-500">
-              <p dangerouslySetInnerHTML={{__html: fetcher.data?.post.content || fetcher.state === 'loading' ? 'Loading...' : ''}} />
+              <p dangerouslySetInnerHTML={{__html: fetcher.data?.post.content || (fetcher.state === 'loading' ? 'Loading...' : '')}} />
             </td>
           </tr>
           <tr>
