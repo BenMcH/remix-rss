@@ -1,8 +1,9 @@
 import Parser from 'rss-parser';
 import { FeedItemPost } from '~/components/FeedItem';
 import { db } from '~/utils/db.server';
+import { insertFeedPosts } from '~/utils/feedPost.server';
 
-type InternalFeed = {
+export type InternalFeed = {
   title: string
   url: string
   description: string
@@ -13,42 +14,6 @@ type InternalFeed = {
 const parser = new Parser();
 
 let feeds = new Map<string, InternalFeed>();
-
-async function insertFeedPosts(feed: InternalFeed) {
-  const dbFeed = await db.feed.findFirst({
-    where: {
-      url: feed.url,
-    }, select: {
-      id: true,
-    }
-  });
-
-  if (dbFeed === null) {
-    return;
-  }
-
-  await Promise.all(
-    feed.items.map((post) => 
-      db.feedPost.upsert({
-        where: {
-          feedId_date_link: {
-            date: post.date,
-            feedId: dbFeed.id,
-            link: post.link,
-          }
-        },
-        create: {
-            feedId: dbFeed.id,
-            title: post.title,
-            link: post.link,
-            date: post.date,
-            content: post.content,
-            contentSnippet: post.contentSnippet,
-        },
-        update: {}
-      })
-  ));
-}
 
 export const getFeed = async (url: string): Promise<InternalFeed>  => {
   const existingFeed = feeds.get(url);

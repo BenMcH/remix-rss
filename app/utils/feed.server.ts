@@ -1,5 +1,6 @@
 import { db } from "./db.server";
 import * as rss from '~/services/rss.server';
+import { insertFeedPosts } from "./feedPost.server";
 
 
 async function getFeed(url: string) {
@@ -14,13 +15,22 @@ async function createFeed(url: string) {
 	const feed = await rss.getFeed(url);
 
 	if (feed) {
-		return db.feed.create({
+		let dbFeed = await db.feed.create({
 			data: {
 				url,
 				title: feed.title,
 				description: feed.description
 			}
-		})
+		});
+
+		let internalFeed: rss.InternalFeed = {
+			...dbFeed,
+			items: feed.items
+		}
+
+		await insertFeedPosts(internalFeed)
+
+		return dbFeed;
 	}
 
 	return null;
