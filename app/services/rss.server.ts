@@ -1,6 +1,14 @@
 import Parser from 'rss-parser';
-import { InternalFeed } from '~/routes';
+import { FeedItemPost } from '~/components/FeedItem';
 import { db } from '~/utils/db.server';
+
+type InternalFeed = {
+  title: string
+  url: string
+  description: string
+  image?: string
+  items: Array<Omit<FeedItemPost, 'id'> & {content: string}>
+}
 
 const parser = new Parser();
 

@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useFetcher } from 'remix';
 
 export type FeedItemPost = {
+  id: string;
 	contentSnippet: string;
 	date: string;
 	title: string
 	link: string;
-	content: string;
 }
 
 const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
   let contentSnippet = item.contentSnippet || '';
 
   contentSnippet = contentSnippet.split('\n')[0];
+
+  let fetcher = useFetcher()
 
   const [open, setOpen] = useState(false);
 
@@ -22,7 +25,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
 
   return (
     <>
-      <tr className="cursor-pointer border-t" onClick={() => setOpen(!open)}>
+      <tr className="cursor-pointer border-t" onClick={() => setOpen(!open)} onPointerEnter={() => !fetcher.data && fetcher.load(`/api/posts/${item.id}`)}>
         <td className={`${open ? 'pt-2' : 'py-2'} md:truncate md:max-w-screen-2xl`}><span className="pl-2 text-sm font-bold">{item.title}</span> {!open && <span className="text-xs font-light hidden md:inline">{contentSnippet}</span>}</td>
         <td className={`${open ? 'pt-2' : 'py-2'} text-xs pl-4 text-right`}>{renderedDate}</td>
       </tr>
@@ -30,7 +33,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
         <>
           <tr>
             <td colSpan={2} className="pl-2 border-l border-l-slate-500">
-              <p dangerouslySetInnerHTML={{__html: item.content || ''}} />
+              <p dangerouslySetInnerHTML={{__html: fetcher.data?.post.content || fetcher.state === 'loading' ? 'Loading...' : ''}} />
             </td>
           </tr>
           <tr>
