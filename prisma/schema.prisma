@@ -17,6 +17,7 @@ model Feed {
   id               String             @id @default(uuid())
   title            String
   url              String             @unique
+  description      String
   FeedSubscription FeedSubscription[]
   FeedPost         FeedPost[]
 }
@@ -38,4 +39,6 @@ model FeedPost {
   link           String
   feed           Feed   @relation(fields: [feedId], references: [id])
   feedId         String
+
+  @@unique([feedId, date, link])
 }
