@@ -1,4 +1,4 @@
-import { MetaFunction, LoaderFunction, Link, Outlet, redirect } from 'remix';
+import { MetaFunction, LoaderFunction, Link, Outlet, redirect, useTransition } from 'remix';
 import { useLoaderData } from 'remix';
 
 import { getFeed } from '~/services/rss.server';
@@ -34,22 +34,22 @@ export type InternalFeed = {
 export default function FeedLayout() {
 	let data = useLoaderData<{email?: string, userFeeds: Feed[]}>();
 
-    return (
-      <div className="flex flex-col-reverse md:flex-row gap-2">
-        <Recents feeds={data.userFeeds} />
-        <div className="flex-grow">
-          <div className="flex justify-between">
-            <Link to='/'>{'< Home  '}</Link>
-            <section className="hidden lg:block">
-              <FeedSearch />
-            </section>
-            <span className="text-right ">{data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}</span>
-          </div>
-          <Outlet />
-          <section className="lg:hidden">
+  return (
+    <div className="flex flex-col-reverse md:flex-row gap-2">
+      <Recents feeds={data.userFeeds} />
+      <div className="flex-grow">
+        <div className="flex justify-between">
+          <Link to='/'>{'< Home  '}</Link>
+          <section className="hidden lg:block">
             <FeedSearch />
           </section>
+          <span className="text-right ">{data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}</span>
         </div>
+        <Outlet />
+        <section className="lg:hidden">
+          <FeedSearch />
+        </section>
       </div>
-    );
+    </div>
+  );
 }
