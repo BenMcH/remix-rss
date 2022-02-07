@@ -1,5 +1,11 @@
-import { LoaderFunction, useLoaderData, Link } from "remix";
+import { LoaderFunction, useLoaderData, Link, MetaFunction } from "remix";
 import { db } from "~/utils/db.server";
+
+export let meta: MetaFunction = ({ data }) => {
+	return {
+		title: 'All RSS Feeds'
+	}
+}
 
 export let loader: LoaderFunction = async ({request}) => {
 	let data = await db.feed.findMany({
