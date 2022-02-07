@@ -4,6 +4,7 @@ import { useLoaderData } from 'remix';
 import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
 import { db } from '~/utils/db.server';
+import FeedLink from '~/components/FeedLink';
 
 export interface IFeed {
   url: string
@@ -59,7 +60,7 @@ export default function Index() {
 			<ul className="mt-4">
 				{data.results.map((item) => ( 
 					<li key={item.url}>
-						<Link to={`/feed?feed=${item.url}`} prefetch="intent">{item.title}</Link>
+						<FeedLink feed={item} />
 						{item.description && <p className="text-sm">{item.description}</p>}
 					</li>
 				))}

@@ -1,4 +1,5 @@
 import { LoaderFunction, useLoaderData, Link, MetaFunction } from "remix";
+import FeedLink from "~/components/FeedLink";
 import { db } from "~/utils/db.server";
 
 export let meta: MetaFunction = ({ data }) => {
@@ -31,7 +32,7 @@ export default function FeedList() {
 			<h1>All known feeds</h1>
 			<ul className="mt-4">
 				{data.map((item) => ( 
-					<li key={item.url}><Link to={`/feed?feed=${item.url}`} prefetch="intent">{item.title}</Link></li>
+					<li key={item.url}><FeedLink feed={item} /></li>
 				))}
 			</ul>
 		</main>
