@@ -4,6 +4,7 @@ import { useFetcher, Link, useTransition } from 'remix';
 function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean}) {
   let fetcher = useFetcher();
   let transition = useTransition();
+
   if (fetcher.state !== 'idle') {
     return null;
   }

@@ -1,7 +1,5 @@
-import { FeedItemPost } from "~/components/FeedItem";
 import { InternalFeed } from "~/services/rss.server";
 import { db } from "./db.server";
-
 
 export async function insertFeedPosts(feed: InternalFeed) {
   const dbFeed = await db.feed.findFirst({

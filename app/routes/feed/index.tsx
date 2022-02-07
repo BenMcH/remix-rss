@@ -24,8 +24,7 @@ export let loader: LoaderFunction = async ({request}) => {
 
   const user = await authenticator.isAuthenticated(request);
 
-  await getFeed(feedParam);
-  const dbFeed = await feedService.getFeed(feedParam);
+  let [,dbFeed] = await Promise.all([getFeed(feedParam), feedService.getFeed(feedParam)]);
 
   if (!dbFeed) {
     return {
@@ -40,9 +39,7 @@ export let loader: LoaderFunction = async ({request}) => {
 
   try {
     let feed = await db.feed.findFirst({
-      where: {
-        id: dbFeed.id
-      },
+      where: dbFeed,
       select: {
         title: true,
         url: true,

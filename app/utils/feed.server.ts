@@ -2,10 +2,10 @@ import { db } from "./db.server";
 import * as rss from '~/services/rss.server';
 import { insertFeedPosts } from "./feedPost.server";
 
-
 async function getFeed(url: string) {
 	let feed = await db.feed.findFirst({
 		where: { url },
+		select: { id: true }
 	});
 
 	return feed || createFeed(url);
@@ -30,7 +30,7 @@ async function createFeed(url: string) {
 
 		await insertFeedPosts(internalFeed)
 
-		return dbFeed;
+		return {id: dbFeed.id};
 	}
 
 	return null;

@@ -1,12 +1,10 @@
-import { MetaFunction, LoaderFunction, Link, Outlet, redirect, useTransition } from 'remix';
+import { LoaderFunction, Link, Outlet } from 'remix';
 import { useLoaderData } from 'remix';
 
-import { getFeed } from '~/services/rss.server';
 import Recents from '~/components/Recents';
 import { FeedItemPost } from '~/components/FeedItem';
 import { authenticator } from '~/services/auth.server';
 import * as userService from '~/utils/user.server';
-import * as feedService from '~/utils/feed.server';
 import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
 

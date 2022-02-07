@@ -1,11 +1,9 @@
 import { Feed, User } from '@prisma/client';
 import { db } from './db.server';
 
-
 export type {
 	User
 }
-
 
 function getUserByEmail(email: string) {
 	return db.user.findFirst({
@@ -49,7 +47,7 @@ async function deleteSubscription(user: User | null, feedId: string) {
 	});
 }
 
-async function createFeedSubscription(user: User, feed: Feed) {
+async function createFeedSubscription(user: Pick<User, 'id'>, feed: Pick<Feed, 'id'>) {
 	let where = {userId: user.id, feedId: feed.id}
 	let dbFeedSubscription = await db.feedSubscription.findFirst({where});
 
