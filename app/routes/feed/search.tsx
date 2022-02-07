@@ -1,13 +1,9 @@
 import { MetaFunction, LoaderFunction, Link, ActionFunction, redirect } from 'remix';
 import { useLoaderData } from 'remix';
 
-import Recents from '~/components/Recents';
-import { authenticator } from '~/services/auth.server';
-import * as userService from '~/utils/user.server';
 import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
 import { db } from '~/utils/db.server';
-import Feed from '.';
 
 export interface IFeed {
   url: string
@@ -16,8 +12,7 @@ export interface IFeed {
 
 export let meta: MetaFunction = ({data}) => {
   return {
-    title: data.feed?.title || 'RSS Reader',
-    description: data.feed?.description || 'Read an rss feed in peace'
+    title: data.queryParam ? `Search Results: ${data.queryParam}` : 'Search Results',
   };
 };
 
