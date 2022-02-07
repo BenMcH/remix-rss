@@ -37,10 +37,12 @@ export let action: ActionFunction = async ({request}) => {
     return {}
   }
 
-  if (!feed || !feed.startsWith('http')) {
-    return {
-      error: 'Feed not found'
-    }
+  if (!feed) {
+    return {error: 'feed is required'};
+  }
+
+  if (!feed.startsWith('http')) {
+    return redirect(`/feed/search?query=${feed}`)
   }
 
   return redirect(`/feed?feed=${feed}`);

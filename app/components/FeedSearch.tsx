@@ -17,7 +17,7 @@ export default function FeedSearch() {
 
 	return (
       <Form method="post" action="/?index" className="flex flex-row gap-4" ref={ref}>
-        <label>{'RSS Feed:'} <input type="text" name="feed" className="border" /></label>
+        <label>{'Search:'} <input type="text" name="feed" className="border" /></label>
         <button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600" disabled={submitting}>{submitting ? 'Loading' : 'Go'}</button>
         <Link to="/all_feeds">{'All Feeds'}</Link>
       </Form>
