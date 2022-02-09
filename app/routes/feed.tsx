@@ -27,17 +27,17 @@ export default function FeedLayout() {
     <div className="flex flex-col-reverse md:flex-row gap-2">
       <Recents feeds={data.userFeeds} />
       <div className="flex-grow">
-        <div className="flex justify-between">
+        <div className="flex justify-between pb-4">
           <Link to='/'>{'< Home  '}</Link>
           <section className="hidden lg:block">
             <FeedSearch />
           </section>
-          <span className="text-right ">{data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}</span>
+          <span className="text-right">{data.email ? <span>Hi, {data.email}! <Link to='/logout'>Logout</Link></span> : <Link to='/login'>Login</Link>}</span>
         </div>
-        <Outlet />
-        <section className="lg:hidden">
+        <section className="lg:hidden py-4">
           <FeedSearch />
         </section>
+        <Outlet />
       </div>
     </div>
   );
