@@ -1,38 +1,28 @@
 import Parser from 'rss-parser';
-import { FeedItemPost } from '~/components/FeedItem';
 import { insertFeedPosts } from '~/utils/feedPost.server';
-
-export type InternalFeed = {
-  title: string
-  url: string
-  description: string
-  image?: string
-  items: Array<Omit<FeedItemPost, 'id'> & {content: string}>
-}
+import { TNetworkRssFeed } from './rss-types';
 
 const parser = new Parser();
 
-let feeds: Map<string, InternalFeed>;
-
-feeds = new Map<string, InternalFeed>();
+let feeds: Map<string, TNetworkRssFeed>;
 
 declare global {
-  var __feedsCache: Map<string, InternalFeed> | undefined;
+  var __feedsCache: Map<string, TNetworkRssFeed> | undefined;
 }
 
 // this is needed because in development we don't want to restart
 // the server with every change, but we want to make sure we don't
 // create a new cache every time another file changes
 if (process.env.NODE_ENV === 'production') {
-  feeds = new Map<string, InternalFeed>();
+  feeds = new Map<string, TNetworkRssFeed>();
 } else {
   if (!global.__feedsCache) {
-    global.__feedsCache = new Map<string, InternalFeed>();
+    global.__feedsCache = new Map<string, TNetworkRssFeed>();
   }
   feeds = global.__feedsCache;
 }
 
-export const getFeed = async (url: string): Promise<InternalFeed>  => {
+export const getFeed = async (url: string): Promise<TNetworkRssFeed>  => {
   const existingFeed = feeds.get(url);
 
   if (existingFeed) {
@@ -41,7 +31,7 @@ export const getFeed = async (url: string): Promise<InternalFeed>  => {
 
   const feed = await parser.parseURL(url)
 
-  const newFeed: InternalFeed = {
+  const newFeed: TNetworkRssFeed = {
     title: feed.title || '',
     description: feed.description || '',
     items: feed.items.map((item) => {

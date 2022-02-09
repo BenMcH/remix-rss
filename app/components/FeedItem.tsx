@@ -1,13 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useFetcher } from 'remix';
+import { FeedItemPost } from '~/services/rss-types';
 
-export type FeedItemPost = {
-  id: string;
-	contentSnippet: string;
-	date: string;
-	title: string
-	link: string;
-}
 
 const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
   let contentSnippet = item.contentSnippet || '';

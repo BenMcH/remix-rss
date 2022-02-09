@@ -1,6 +1,7 @@
 import { db } from "./db.server";
 import * as rss from '~/services/rss.server';
 import { insertFeedPosts } from "./feedPost.server";
+import { TNetworkRssFeed } from "~/services/rss-types";
 
 async function getFeed(url: string) {
 	let feed = await db.feed.findFirst({
@@ -23,7 +24,7 @@ async function createFeed(url: string) {
 			}
 		});
 
-		let internalFeed: rss.InternalFeed = {
+		let internalFeed: TNetworkRssFeed = {
 			...dbFeed,
 			items: feed.items
 		}

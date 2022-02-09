@@ -23,7 +23,7 @@ let auth0Strategy = new Auth0Strategy(
     clientSecret: process.env.CLIENT_SECRET,
     domain: "mchone.us.auth0.com",
   },
-  async ({ accessToken, refreshToken, extraParams, profile }) => {
+  async ({ profile }) => {
 	  let email = profile.emails[0].value;
 
 	  return await getUserByEmail(email) ||  createUser(email);

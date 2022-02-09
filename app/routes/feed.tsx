@@ -2,7 +2,6 @@ import { LoaderFunction, Link, Outlet } from 'remix';
 import { useLoaderData } from 'remix';
 
 import Recents from '~/components/Recents';
-import { FeedItemPost } from '~/components/FeedItem';
 import { authenticator } from '~/services/auth.server';
 import * as userService from '~/utils/user.server';
 import { Feed } from '@prisma/client';
@@ -20,14 +19,6 @@ export let loader: LoaderFunction = async ({request}) => {
 
   return {email: user?.email, userFeeds}
 };
-
-export type InternalFeed = {
-  title: string
-  url: string
-  description: string
-  image?: string
-  items: FeedItemPost[]
-}
 
 export default function FeedLayout() {
 	let data = useLoaderData<{email?: string, userFeeds: Feed[]}>();

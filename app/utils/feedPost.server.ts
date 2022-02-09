@@ -1,7 +1,7 @@
-import { InternalFeed } from "~/services/rss.server";
+import { TNetworkRssFeed } from "~/services/rss-types";
 import { db } from "./db.server";
 
-export async function insertFeedPosts(feed: InternalFeed) {
+export async function insertFeedPosts(feed: TNetworkRssFeed) {
   const dbFeed = await db.feed.findFirst({
     where: {
       url: feed.url,

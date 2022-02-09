@@ -1,5 +1,5 @@
 import { Feed } from '@prisma/client';
-import { useFetcher, Link, useTransition } from 'remix';
+import { useFetcher } from 'remix';
 import FeedLink from './FeedLink';
 
 function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean}) {

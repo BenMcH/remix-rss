@@ -1,7 +1,7 @@
 import { LoaderFunction } from "remix";
 import { db } from "~/utils/db.server";
 
-export const loader: LoaderFunction = async ({request, params}) => {
+export const loader: LoaderFunction = async ({params}) => {
 	const postId = params.postId
 
 	const post = await db.feedPost.findFirst({

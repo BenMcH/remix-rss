@@ -5,6 +5,7 @@ import { authenticator } from "~/services/auth.server";
 import * as userService from '~/utils/user.server'
 import * as feedService from '~/utils/feed.server';
 import { db } from '~/utils/db.server';
+import { TFeed } from '~/services/rss-types';
 
 export let meta: MetaFunction = ({data}) => {
   return {
@@ -73,22 +74,6 @@ export let loader: LoaderFunction = async ({request}) => {
   } catch(error: any) {
     return {feed: null, error: error.message}
   }
-};
-
-type TFeedPost = {
-  id: string
-	contentSnippet: string;
-	date: string;
-	title: string
-	link: string;
-}
-
-type TFeed = {
-  title: string
-  url: string
-  description: string
-  image?: string
-  items: Array<TFeedPost>
 };
 
 type LoaderType = {feed: TFeed, error: null} | {feed: null, error: string}
