@@ -50,7 +50,7 @@ export const getFeed = async (url: string): Promise<TNetworkRssFeed>  => {
   await insertFeedPosts(newFeed);
 
   feeds.set(url, newFeed);
-  setTimeout(() => feeds.delete(url), 60000);
+  setTimeout(() => feeds.delete(url), 60_000 * 30);
 
 
   return newFeed;
