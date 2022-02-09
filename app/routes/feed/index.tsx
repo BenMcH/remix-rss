@@ -55,10 +55,10 @@ export let loader: LoaderFunction = async ({request}) => {
           },
           orderBy: {
             date: 'desc'
-          }
+          },
+          take: 20
         }
-      },
-      take: 20,
+      }
     });
 
     if (feed) {
