@@ -57,7 +57,8 @@ export let loader: LoaderFunction = async ({request}) => {
             date: 'desc'
           }
         }
-      }
+      },
+      take: 20,
     });
 
     if (feed) {
