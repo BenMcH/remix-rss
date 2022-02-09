@@ -34,16 +34,18 @@ const Recents: React.FC<{feeds: Feed[]}> = ({feeds}) => {
     return <></>
   }
   return (
-    <section id="recents" className="md:w-96 w-full h-screen px-4 py-8 md:overflow-y-auto">
+    <aside id="recents" className="md:w-96 md:h-screen px-4 md:py-8">
       <h2>Subscriptions</h2>
-      <table className="mt-4">
-        <tbody>
-          {feeds.map((recent) => (
-            <SubscriptionForm recent={recent} firstFeed={recent === feeds[0]} key={recent.id} />
-          ))}
-        </tbody>
-      </table>
-    </section>
+      <div className="h-full overflow-y-auto pb-4 pr-2">
+        <table className="mt-4">
+          <tbody>
+            {feeds.map((recent) => (
+              <SubscriptionForm recent={recent} firstFeed={recent === feeds[0]} key={recent.id} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </aside>
   );
 }
 
