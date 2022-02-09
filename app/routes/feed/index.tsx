@@ -1,6 +1,6 @@
 import { getFeed } from '~/services/rss.server';
 import FeedItem from '~/components/FeedItem';
-import { LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
+import { Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
 import { authenticator } from "~/services/auth.server";
 import * as userService from '~/utils/user.server'
 import * as feedService from '~/utils/feed.server';
@@ -18,6 +18,7 @@ export let meta: MetaFunction = ({data}) => {
 export let loader: LoaderFunction = async ({request}) => {
   const {searchParams} = new URL(request.url);
   const feedParam = searchParams.get('feed');
+  let page = Number.parseInt(searchParams.get('page')?.toString() || '1', 10);
 
   if (!feedParam) {
 	  throw redirect('/')
@@ -38,6 +39,8 @@ export let loader: LoaderFunction = async ({request}) => {
     await userService.createFeedSubscription(user, dbFeed);
   }
 
+  const PAGE_SIZE = 20;
+
   try {
     let feed = await db.feed.findFirst({
       where: dbFeed,
@@ -56,7 +59,8 @@ export let loader: LoaderFunction = async ({request}) => {
           orderBy: {
             date: 'desc'
           },
-          take: 20
+          take: PAGE_SIZE,
+          skip: PAGE_SIZE * page - PAGE_SIZE
         }
       }
     });
@@ -69,18 +73,18 @@ export let loader: LoaderFunction = async ({request}) => {
         url: feed.url
       }
 
-      return {feed: newFeed, error: null}
+      return {feed: newFeed, error: null, page}
     }
 
   } catch(error: any) {
-    return {feed: null, error: error.message}
+    return {feed: null, error: error.message, page}
   }
 };
 
-type LoaderType = {feed: TFeed, error: null} | {feed: null, error: string}
+type LoaderType = {feed: TFeed, error: null, page: number} | {feed: null, error: string, page: number}
 
 export default function Feed() {
-	const {error, feed} = useLoaderData<LoaderType>();
+	const {error, feed, page} = useLoaderData<LoaderType>();
 
 	if (error || !feed) {
 		return (
@@ -100,6 +104,12 @@ export default function Feed() {
             <FeedItem item={item} key={item.id} />
           ))}
         </tbody>
+        <tr>
+          <td className="pl-4 pb-2" colSpan={2}>
+            {page > 1 && (<><Link to={`/feed?feed=${feed.url}&page=${page-1}`}>{'Prev'}</Link> | </>)}
+            <Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> 
+          </td>
+        </tr>
       </table>
 		</>
 	);
