@@ -104,12 +104,14 @@ export default function Feed() {
             <FeedItem item={item} key={item.id} />
           ))}
         </tbody>
-        <tr>
-          <td className="pl-4 pb-2" colSpan={2}>
-            {page > 1 && (<><Link to={`/feed?feed=${feed.url}&page=${page-1}`}>{'Prev'}</Link> | </>)}
-            <Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> 
-          </td>
-        </tr>
+        <tfoot>
+          <tr>
+            <td className="pb-2" colSpan={2}>
+              {page > 1 && (<><Link to={`/feed?feed=${feed.url}&page=${page-1}`}>{'Prev'}</Link> | </>)}
+              <Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> 
+            </td>
+          </tr>
+        </tfoot>
       </table>
 		</>
 	);

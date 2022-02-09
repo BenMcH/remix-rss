@@ -34,7 +34,7 @@ const Recents: React.FC<{feeds: Feed[]}> = ({feeds}) => {
     return <></>
   }
   return (
-    <section id="recents" className="max-w-sm md:px-4">
+    <section id="recents" className="md:w-96 w-full h-screen px-4 py-8 md:overflow-y-auto md:border-r ">
       <h2>Subscriptions</h2>
       <table className="mt-4">
         <tbody>
