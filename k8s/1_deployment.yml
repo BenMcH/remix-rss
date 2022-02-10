@@ -105,3 +105,8 @@ spec:
               secretKeyRef:
                 name: rss-secrets
                 key: REDIS_URL
+          - name: PASSPHRASES
+            valueFrom:
+              secretKeyRef:
+                name: rss-secrets
+                key: PASSPHRASES
