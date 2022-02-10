@@ -8,14 +8,10 @@ export let rssQueue = Queue('rss-fetch', {
 	redis: {
 		host: process.env.REDIS_HOST || 'localhost',
 		password: process.env.REDIS_PASSWORD || 'redis'
-	},
-	limiter: {
-		max: 1,
-		duration: 500
 	}
 });
 
-rssQueue.process((job, done) => getFeed(job.data.url)
+rssQueue.process(1, (job, done) => getFeed(job.data.url)
 	.then(() => console.log(`fetched rss feed: ${job.data.url}`))
 	.then(() => done())
 	.catch(err => done(err)));
