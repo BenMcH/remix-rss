@@ -45,3 +45,63 @@ spec:
               secretKeyRef:
                 name: rss-secrets
                 key: SESSION_SECRET
+          - name: QUIRREL_API_URL
+            value: http://quirrel:9181
+          - name: QUIRREL_TOKEN
+            value: <token-generated-in-previous-step>
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: rss
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: bitnami/redis:6.0.13
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: rss-secrets
+                key: REDIS_PASSWORD
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quirrel
+  namespace: rss
+  labels:
+    app: quirrel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quirrel
+  template:
+    metadata:
+      labels:
+        app: quirrel
+    spec:
+      containers:
+      - name: quirrel
+        image: ghcr.io/quirrel-dev/quirrel:sha-1b0f329
+        env:
+          - name: REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                name: rss-secrets
+                key: REDIS_URL
