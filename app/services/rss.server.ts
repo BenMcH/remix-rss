@@ -4,31 +4,7 @@ import { TNetworkRssFeed } from './rss-types';
 
 const parser = new Parser();
 
-let feeds: Map<string, TNetworkRssFeed>;
-
-declare global {
-  var __feedsCache: Map<string, TNetworkRssFeed> | undefined;
-}
-
-// this is needed because in development we don't want to restart
-// the server with every change, but we want to make sure we don't
-// create a new cache every time another file changes
-if (process.env.NODE_ENV === 'production') {
-  feeds = new Map<string, TNetworkRssFeed>();
-} else {
-  if (!global.__feedsCache) {
-    global.__feedsCache = new Map<string, TNetworkRssFeed>();
-  }
-  feeds = global.__feedsCache;
-}
-
 export const getFeed = async (url: string): Promise<TNetworkRssFeed>  => {
-  const existingFeed = feeds.get(url);
-
-  if (existingFeed) {
-    return existingFeed;
-  }
-
   const feed = await parser.parseURL(url)
 
   const newFeed: TNetworkRssFeed = {
@@ -48,9 +24,6 @@ export const getFeed = async (url: string): Promise<TNetworkRssFeed>  => {
   }
 
   await insertFeedPosts(newFeed);
-
-  feeds.set(url, newFeed);
-  setTimeout(() => feeds.delete(url), 60_000 * 30);
 
 
   return newFeed;
