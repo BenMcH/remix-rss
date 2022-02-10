@@ -6,7 +6,7 @@ import { db } from '~/utils/db.server';
 console.log("loading queues")
 export let rssQueue = Queue('rss-fetch', {
 	redis: {
-		host: process.env.REDIS_SSERVICE_HOST || 'localhost',
+		host: process.env.REDIS_SERVICE_HOST || 'localhost',
 		password: process.env.REDIS_PASSWORD || 'redis'
 	}
 });
