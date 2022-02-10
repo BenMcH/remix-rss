@@ -1,11 +1,9 @@
-import { getFeed } from '~/services/rss.server';
 import FeedItem from '~/components/FeedItem';
 import { Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
 import { authenticator } from "~/services/auth.server";
 import * as userService from '~/utils/user.server'
-import * as feedService from '~/utils/feed.server';
-import { db } from '~/utils/db.server';
 import { TFeed } from '~/services/rss-types';
+import { getFeed } from '~/utils/feed.server';
 
 export let meta: MetaFunction = ({data}) => {
   return {
@@ -26,56 +24,28 @@ export let loader: LoaderFunction = async ({request}) => {
 
   const user = await authenticator.isAuthenticated(request);
 
-  let [,dbFeed] = await Promise.all([getFeed(feedParam), feedService.getFeed(feedParam)]);
-
-  if (!dbFeed) {
-    return {
-      feed: null,
-      error: 'Feed not found'
-    }
-  }
-
-  if (user && dbFeed) {
-    await userService.createFeedSubscription(user, dbFeed);
-  }
-
-  const PAGE_SIZE = 20;
-
   try {
-    let feed = await db.feed.findFirst({
-      where: dbFeed,
-      select: {
-        title: true,
-        url: true,
-        description: true,
-        FeedPost: {
-          select: {
-            contentSnippet: true,
-            date: true,
-            id: true,
-            title: true,
-            link: true,
-          },
-          orderBy: {
-            date: 'desc'
-          },
-          take: PAGE_SIZE,
-          skip: PAGE_SIZE * page - PAGE_SIZE
-        }
-      }
-    });
+    let feed = await getFeed(feedParam);
 
-    if (feed) {
-      const newFeed: TFeed = {
-        title: feed.title,
-        description: feed.description,
-        items: feed.FeedPost,
-        url: feed.url
+    if (!feed) {
+      return {
+        feed: null,
+        error: 'Feed not found'
       }
-
-      return {feed: newFeed, error: null, page}
     }
 
+    if (user) {
+      await userService.createFeedSubscription(user, feed);
+    }
+
+    const newFeed: TFeed = {
+      title: feed.title,
+      description: feed.description,
+      items: feed.FeedPost,
+      url: feed.url
+    }
+
+    return {feed: newFeed, error: null, page}
   } catch(error: any) {
     return {feed: null, error: error.message, page}
   }
