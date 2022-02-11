@@ -1,11 +1,8 @@
 import { rssFanout } from "~/queues/rss.server"
 
 export let loader = async () => {
-	rssFanout.add({}, {
-		repeat: {
-			cron: '0 * * * *'
-		}
-	})
+	console.log(await rssFanout.getDelayed())
 
 	return {}
 }
+

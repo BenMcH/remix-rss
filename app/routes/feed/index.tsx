@@ -25,7 +25,7 @@ export let loader: LoaderFunction = async ({request}) => {
   const user = await authenticator.isAuthenticated(request);
 
   try {
-    let feed = await getFeed(feedParam);
+    let feed = await getFeed(feedParam, page);
 
     if (!feed) {
       return {

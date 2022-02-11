@@ -1,36 +1,61 @@
-console.log("loading queues")
-import Queue from 'bull';
+import Queue, {Queue as IQueue} from 'bull';
 import { getFeed } from "~/services/rss.server";
 import { db } from '~/utils/db.server';
 
-console.log("loading queues")
-export let rssQueue = Queue('rss-fetch', {
-	redis: {
-		host: process.env.REDIS_SERVICE_HOST || 'localhost',
-		password: process.env.REDIS_PASSWORD || 'redis'
-	}
-});
+declare global {
+  var __rssQueue: IQueue<any> | undefined;
+  var __rssFanoutQueue: IQueue<any> | undefined;
+}
 
-rssQueue.process(1, (job, done) => getFeed(job.data.url)
-	.then(() => console.log(`fetched rss feed: ${job.data.url}`))
-	.then(() => done())
-	.catch(err => done(err)));
+let rssQueue: IQueue<any>;
+let rssFanout: IQueue<any>;
 
-export let rssFanout = Queue('rss-fanout', {
-	redis: {
-		host: process.env.REDIS_HOST || 'localhost',
-		password: process.env.REDIS_PASSWORD || 'redis'
-	}
-});
 
-rssFanout.process(async (job, done) => {
-	let feeds = await db.feed.findMany({
-		select: {
-			url: true
-		},
+if (global.__rssQueue) {
+	rssQueue = global.__rssQueue;
+} else {
+	rssQueue = global.__rssQueue = Queue('rss-fetch', {
+		redis: {
+			host: process.env.REDIS_SERVICE_HOST || 'localhost',
+			password: process.env.REDIS_PASSWORD || 'redis'
+		}
 	});
 
-	await rssQueue.addBulk(feeds.map(feed => ({data: {url: feed.url}})))
+	rssQueue.process(3, (job, done) => getFeed(job.data.url)
+		.then(() => console.log(`fetched rss feed: ${job.data.url}`))
+		.then(() => done())
+		.catch(err => done(err)));
+}
 
-	done()
-});
+if (global.__rssFanoutQueue) {
+	rssFanout = global.__rssFanoutQueue;
+} else {
+	rssFanout = global.__rssFanoutQueue = Queue('rss-fanout', {
+		redis: {
+			host: process.env.REDIS_SERVICE_HOST || 'localhost',
+			password: process.env.REDIS_PASSWORD || 'redis'
+		}
+	});
+
+	rssFanout.process(async (job) => {
+		console.log("Starting fan-out for rss feeds")
+		let feeds = await db.feed.findMany({
+			select: {
+				url: true
+			},
+		});
+		console.log(`Scanning ${feeds.length} feeds`)
+
+		return rssQueue.addBulk(feeds.map(feed => ({data: {url: feed.url}})))
+	});
+}
+
+rssFanout.removeJobs('*').then(() => {
+	rssFanout.add({}, {
+		repeat: {
+			every: 1000 * 60 * 30
+		}
+	});
+})
+
+export { rssQueue, rssFanout };
