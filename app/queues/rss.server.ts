@@ -24,7 +24,7 @@ rssQueue = global.__rssQueue = Queue('rss-fetch', {
 	}
 });
 
-rssQueue.process(3, async (job) => {
+rssQueue.process(async (job) => {
 	await getFeed(job.data.url)
 	console.log(`fetched rss feed: ${job.data.url}`)
 });
