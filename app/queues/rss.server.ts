@@ -24,10 +24,10 @@ rssQueue = global.__rssQueue = Queue('rss-fetch', {
 	}
 });
 
-rssQueue.process(3, (job, done) => getFeed(job.data.url)
-	.then(() => console.log(`fetched rss feed: ${job.data.url}`))
-	.then(() => done())
-	.catch(err => done(err)));
+rssQueue.process(3, async (job) => {
+	await getFeed(job.data.url)
+	console.log(`fetched rss feed: ${job.data.url}`)
+});
 
 if (global.__rssFanoutQueue) {
 	global.__rssFanoutQueue.close();
