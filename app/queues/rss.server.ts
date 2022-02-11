@@ -20,11 +20,11 @@ rssQueue = global.__rssQueue = Queue('rss-fetch', {
 	redis: {
 		host: process.env.REDIS_SERVICE_HOST || 'localhost',
 		password: process.env.REDIS_PASSWORD || 'redis',
-		lazyConnect: false
+		enableOfflineQueue: false
 	}
 });
 
-rssQueue.process(async (job) => {
+rssQueue.process(3, async (job) => {
 	await getFeed(job.data.url)
 	console.log(`fetched rss feed: ${job.data.url}`)
 });
