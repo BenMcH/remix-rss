@@ -12,43 +12,45 @@ let rssFanout: IQueue<any>;
 
 
 if (global.__rssQueue) {
-	rssQueue = global.__rssQueue;
-} else {
-	rssQueue = global.__rssQueue = Queue('rss-fetch', {
-		redis: {
-			host: process.env.REDIS_SERVICE_HOST || 'localhost',
-			password: process.env.REDIS_PASSWORD || 'redis'
-		}
-	});
-
-	rssQueue.process(3, (job, done) => getFeed(job.data.url)
-		.then(() => console.log(`fetched rss feed: ${job.data.url}`))
-		.then(() => done())
-		.catch(err => done(err)));
+	global.__rssQueue.close();
 }
+
+rssQueue = global.__rssQueue = Queue('rss-fetch', {
+	redis: {
+		host: process.env.REDIS_SERVICE_HOST || 'localhost',
+		password: process.env.REDIS_PASSWORD || 'redis',
+		lazyConnect: false
+	}
+});
+
+rssQueue.process(3, (job, done) => getFeed(job.data.url)
+	.then(() => console.log(`fetched rss feed: ${job.data.url}`))
+	.then(() => done())
+	.catch(err => done(err)));
 
 if (global.__rssFanoutQueue) {
-	rssFanout = global.__rssFanoutQueue;
-} else {
-	rssFanout = global.__rssFanoutQueue = Queue('rss-fanout', {
-		redis: {
-			host: process.env.REDIS_SERVICE_HOST || 'localhost',
-			password: process.env.REDIS_PASSWORD || 'redis'
-		}
-	});
-
-	rssFanout.process(async (job) => {
-		console.log("Starting fan-out for rss feeds")
-		let feeds = await db.feed.findMany({
-			select: {
-				url: true
-			},
-		});
-		console.log(`Scanning ${feeds.length} feeds`)
-
-		return rssQueue.addBulk(feeds.map(feed => ({data: {url: feed.url}})))
-	});
+	global.__rssFanoutQueue.close();
 }
+
+rssFanout = global.__rssFanoutQueue = Queue('rss-fanout', {
+	redis: {
+		host: process.env.REDIS_SERVICE_HOST || 'localhost',
+		password: process.env.REDIS_PASSWORD || 'redis',
+		lazyConnect: false
+	}
+});
+
+rssFanout.process(async (job) => {
+	console.log("Starting fan-out for rss feeds")
+	let feeds = await db.feed.findMany({
+		select: {
+			url: true
+		},
+	});
+	console.log(`Scanning ${feeds.length} feeds`)
+
+	return rssQueue.addBulk(feeds.map(feed => ({data: {url: feed.url}})))
+});
 
 rssFanout.removeJobs('*').then(() => {
 	console.log("Adding job")
