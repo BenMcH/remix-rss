@@ -51,10 +51,13 @@ if (global.__rssFanoutQueue) {
 }
 
 rssFanout.removeJobs('*').then(() => {
+	console.log("Adding job")
 	rssFanout.add({}, {
 		repeat: {
 			every: 1000 * 60 * 30
 		}
+	}).then(() => {
+		console.log("Added job")
 	});
 })
 
