@@ -1,6 +1,7 @@
 import Queue, {Queue as IQueue} from 'bull';
 import { getFeed } from "~/services/rss.server";
 import { db } from '~/utils/db.server';
+import {v4} from 'uuid'
 
 declare global {
   var __rssQueue: IQueue<any> | undefined;
@@ -49,7 +50,14 @@ rssFanout.process(async (job) => {
 	});
 	console.log(`Scanning ${feeds.length} feeds`)
 
-	return rssQueue.addBulk(feeds.map(feed => ({data: {url: feed.url}})))
+	return rssQueue.addBulk(feeds.map(feed => ({
+		data: {
+			url: feed.url
+		},
+		opts: {
+			jobId: v4()
+		}
+	})))
 });
 
 rssFanout.removeJobs('*').then(() => {
@@ -57,7 +65,8 @@ rssFanout.removeJobs('*').then(() => {
 	rssFanout.add({}, {
 		repeat: {
 			every: 1000 * 60 * 30
-		}
+		},
+		jobId: v4()
 	}).then(() => {
 		console.log("Added job")
 	});
