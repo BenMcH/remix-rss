@@ -5,7 +5,8 @@ import { TNetworkRssFeed } from './rss-types';
 const parser = new Parser();
 
 export const getFeed = async (url: string): Promise<TNetworkRssFeed>  => {
-  const feed = await parser.parseURL(url)
+  const data = await fetch(url).then(result => result.text());
+  const feed = await parser.parseString(data)
 
   const newFeed: TNetworkRssFeed = {
     title: feed.title || '',
