@@ -3,6 +3,7 @@ import { getFeed } from "~/services/rss.server";
 import { db } from '~/utils/db.server';
 import {v4} from 'uuid'
 import IORedis from 'ioredis';
+import { log } from '~/utils/logger';
 
 
 const getRedisConnection = () => {
@@ -34,12 +35,16 @@ if (global.__rssQueue) {
 }
 
 rssQueue = global.__rssQueue = new Queue<{url: string}>('rss-fetch', {
-	connection: getRedisConnection()
+	connection: getRedisConnection(),
+	defaultJobOptions: {
+		removeOnComplete: true,
+		removeOnFail: true,
+	}
 });
 
 let rssQueueWorker = new Worker('rss-fetch', async (job) => {
 	await getFeed(job.data.url)
-	console.log(`fetched rss feed: ${job.data.url}`)
+	log(`fetched rss feed: ${job.data.url}`)
 }, {
 	connection: getRedisConnection(),
 })
@@ -57,17 +62,21 @@ if (global.__rssFanoutQueue) {
 }
 
 rssFanout = global.__rssFanoutQueue = new Queue('rss-fanout', {
-	connection: getRedisConnection()
+	connection: getRedisConnection(),
+	defaultJobOptions: {
+		removeOnComplete: true,
+		removeOnFail: true,
+	}
 });
 
 rssFanoutWorker = new Worker('rss-fanout', async (job) => {
-	console.log("Starting fan-out for rss feeds")
+	log("Starting fan-out for rss feeds")
 	let feeds = await db.feed.findMany({
 		select: {
 			url: true
 		},
 	});
-	console.log(`Scanning ${feeds.length} feeds`)
+	log(`Scanning ${feeds.length} feeds`)
 
 	return rssQueue.addBulk(feeds.map(feed => ({
 		name: 'rss-fetch',
@@ -85,14 +94,14 @@ global.__rssSchedulers.push(new QueueScheduler('rss-fanout', {
 }))
 
 rssFanout.removeRepeatable('rss-fanout', {every: 1000 * 60 * 30}).then(() => {
-	console.log("Adding job")
+	log("Adding job")
 	rssFanout.add('rss-fanout', {}, {
 		repeat: {
 			every: 1000 * 60 * 30
 		},
 		jobId: v4()
 	}).then(() => {
-		console.log("Added job")
+		log("Added job")
 	});
 })
 
