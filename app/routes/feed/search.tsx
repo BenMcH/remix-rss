@@ -28,6 +28,11 @@ export let loader: LoaderFunction = async ({request}) => {
 	}
 
 	let results = await db.feed.findMany({
+		select: {
+			url: true,
+			title: true,
+			description: true
+		},
 		where: {
 			OR: [
 				{
@@ -50,7 +55,7 @@ export let loader: LoaderFunction = async ({request}) => {
 };
 
 export default function Index() {
-  let data = useLoaderData<{results: Array<Feed>, queryParam: string}>();
+  let data = useLoaderData<{results: Array<Pick<Feed, 'description' | 'url' | 'title'>>, queryParam: string}>();
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-2">
