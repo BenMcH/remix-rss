@@ -76,26 +76,35 @@ export default function Feed() {
 	}
 
 	return (
-		<>
-      <h2 className="mt-4">{feed.title}</h2>
-      {(feed.description && feed.description !== feed.title) && <h4 className="text-xl">{feed.description}</h4>}
-      {feed.image && <img className="max-w-xl" src={feed.image} />}
-
-      <table className="w-full">
-        <tbody>
-          {feed.items.map(item => (
-            <FeedItem item={item} key={item.id} />
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td className="pb-2" colSpan={2}>
-              {page > 1 && (<><Link to={`/feed?feed=${feed.url}&page=${page-1}`}>{'Prev'}</Link> | </>)}
-              {page < maxPage && (<Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> )}
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-		</>
+    <table className="w-full">
+      <thead>
+        <tr>
+          <th colSpan={2} align="left"><h1 className="mt-4">{feed.title}</h1></th>
+        </tr>
+        <tr>
+          <th colSpan={2} align="left">
+            {(feed.description && feed.description !== feed.title) && <h2 className="max-w-5xl text-sm">{feed.description}</h2>}
+          </th>
+        </tr>
+        <tr>
+          <th colSpan={2}>
+            {feed.image && <img className="max-w-xl" src={feed.image} />}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {feed.items.map(item => (
+          <FeedItem item={item} key={item.id} />
+        ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td className="pb-2" colSpan={2}>
+            {page > 1 && (<><Link to={`/feed?feed=${feed.url}&page=${page-1}`}>{'Prev'}</Link> | </>)}
+            {page < maxPage && (<Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> )}
+          </td>
+        </tr>
+      </tfoot>
+    </table>
 	);
 }
