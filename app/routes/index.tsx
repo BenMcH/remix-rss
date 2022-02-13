@@ -42,7 +42,10 @@ export let action: ActionFunction = async ({request}) => {
   }
 
   if (!feed.startsWith('http')) {
-    return redirect(`/feed/search?query=${feed}`)
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('query', feed);
+    
+    return redirect(`/feed/search?${urlSearchParams.toString()}`);
   }
 
   return redirect(`/feed?feed=${feed}`);
