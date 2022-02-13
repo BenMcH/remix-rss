@@ -1,10 +1,10 @@
 import FeedItem from '~/components/FeedItem';
-import { Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
+import { ActionFunction, Form, Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
 import { authenticator } from "~/services/auth.server";
-import * as userService from '~/utils/user.server'
 import { TFeed } from '~/services/rss-types';
 import { getFeed, PAGE_SIZE } from '~/utils/feed.server';
 import { db } from '~/utils/db.server';
+import { createFeedSubscription } from '~/utils/user.server';
 
 export let meta: MetaFunction = ({data}) => {
   return {
@@ -12,6 +12,36 @@ export let meta: MetaFunction = ({data}) => {
     description: data.feed?.description
   };
 };
+
+export let action: ActionFunction = async ({request}) => {
+  const {searchParams} = new URL(request.url);
+  const body = await request.formData();
+
+  const action = body.get('_action')?.toString()
+
+  let user = await authenticator.isAuthenticated(request);
+  const feedParam = searchParams.get('feed')?.toString();
+
+  if (user && feedParam) {
+
+    let feed = await getFeed(feedParam);
+
+    if (!feed) return {}
+
+    if (action === 'subscribe') {
+      await createFeedSubscription(user, feed)
+    } else if (action === 'unsubscribe') {
+      await db.feedSubscription.deleteMany({
+        where: {
+          userId: user.id,
+          feedId: feed.id
+        }
+      })
+    }
+
+    return {}
+  }
+}
 
 
 export let loader: LoaderFunction = async ({request}) => {
@@ -47,9 +77,14 @@ export let loader: LoaderFunction = async ({request}) => {
       return redirect(`/feed?feed=${feedParam}&page=${maxPage}`);
     }
 
-    if (user) {
-      await userService.createFeedSubscription(user, feed);
-    }
+    let count = await db.feedSubscription.count({
+      where: {
+        user: user!, 
+        feedId: feed.id
+      }
+    });
+
+    let state: UserState = user ? count > 0 ? 'subscribed' : 'unsubscribed' : 'logged out';
 
     const newFeed: TFeed = {
       title: feed.title,
@@ -58,16 +93,17 @@ export let loader: LoaderFunction = async ({request}) => {
       url: feed.url
     }
 
-    return {feed: newFeed, error: null, page, maxPage}
+    return {feed: newFeed, error: null, page, maxPage, state}
   } catch(error: any) {
     return {feed: null, error: error.message, page}
   }
 };
 
-type LoaderType = {feed: TFeed, error: null, page: number, maxPage: number} | {feed: null, error: string, page: number, maxPage: undefined};
+type UserState = 'unsubscribed' | 'subscribed' | 'logged out';
+type LoaderType = {feed: TFeed, error: null, page: number, maxPage: number, state: UserState} | {feed: null, error: string, page: number, maxPage: undefined, state: undefined};
 
 export default function Feed() {
-	const {error, feed, page, maxPage} = useLoaderData<LoaderType>();
+	const {error, feed, page, maxPage, state} = useLoaderData<LoaderType>();
 
 	if (error || !feed) {
 		return (
@@ -79,7 +115,21 @@ export default function Feed() {
     <table className="w-full">
       <thead>
         <tr>
-          <th colSpan={2} align="left"><h1 className="mt-4">{feed.title}</h1></th>
+          <th align="left"><h1 className="mt-4">{feed.title}</h1></th>
+          <th align="right">
+            {state !== 'logged out' &&
+            <Form method="post" action={`/feed?index&feed=${feed.url}`} replace>
+              {state === 'subscribed' ? (
+                <button name="_action" value="unsubscribe" className="bg-red-500 border-red-500 text-white px-4 py-2 border rounded-md">
+                  Unsubscribe 
+                </button>
+              ) : (
+                <button name="_action" value="subscribe" className="bg-green-500 border-green-500 text-white px-4 py-2 border rounded-md">
+                  Subscribe 
+                </button>
+              )}
+            </Form>}
+          </th>
         </tr>
         <tr>
           <th colSpan={2} align="left">
