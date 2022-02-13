@@ -38,7 +38,7 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
           </tr>
           <tr>
             <td className="pl-4 pb-2" colSpan={2}>
-              <a href={item.link} target='_blank'>{'Open Link'}</a>
+              <a href={item.link} target='_blank'>{'Open Link'}</a> (via {new URL(item.link).hostname})
             </td>
           </tr>
         </>
