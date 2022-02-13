@@ -43,7 +43,7 @@ async function getFeed(url: string, page = 1): Promise<TDbFeed | null> {
 			}
 		}
 	});
-	
+
 	return feed || createFeed(url);
 }
 
@@ -74,5 +74,6 @@ async function createFeed(url: string) {
 
 export {
 	createFeed,
-	getFeed
+	getFeed,
+	PAGE_SIZE
 }

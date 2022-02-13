@@ -3,7 +3,8 @@ import { Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "rem
 import { authenticator } from "~/services/auth.server";
 import * as userService from '~/utils/user.server'
 import { TFeed } from '~/services/rss-types';
-import { getFeed } from '~/utils/feed.server';
+import { getFeed, PAGE_SIZE } from '~/utils/feed.server';
+import { db } from '~/utils/db.server';
 
 export let meta: MetaFunction = ({data}) => {
   return {
@@ -34,6 +35,18 @@ export let loader: LoaderFunction = async ({request}) => {
       }
     }
 
+    let postCount = await db.feedPost.count({
+      where: {
+        feedId: feed.id
+      }
+    });
+
+    let maxPage = Math.ceil(postCount / PAGE_SIZE);
+
+    if (feed.FeedPost.length === 0) {
+      return redirect(`/feed?feed=${feedParam}&page=${maxPage}`);
+    }
+
     if (user) {
       await userService.createFeedSubscription(user, feed);
     }
@@ -45,16 +58,16 @@ export let loader: LoaderFunction = async ({request}) => {
       url: feed.url
     }
 
-    return {feed: newFeed, error: null, page}
+    return {feed: newFeed, error: null, page, maxPage}
   } catch(error: any) {
     return {feed: null, error: error.message, page}
   }
 };
 
-type LoaderType = {feed: TFeed, error: null, page: number} | {feed: null, error: string, page: number}
+type LoaderType = {feed: TFeed, error: null, page: number, maxPage: number} | {feed: null, error: string, page: number, maxPage: undefined};
 
 export default function Feed() {
-	const {error, feed, page} = useLoaderData<LoaderType>();
+	const {error, feed, page, maxPage} = useLoaderData<LoaderType>();
 
 	if (error || !feed) {
 		return (
@@ -78,7 +91,7 @@ export default function Feed() {
           <tr>
             <td className="pb-2" colSpan={2}>
               {page > 1 && (<><Link to={`/feed?feed=${feed.url}&page=${page-1}`}>{'Prev'}</Link> | </>)}
-              <Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> 
+              {page < maxPage && (<Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> )}
             </td>
           </tr>
         </tfoot>
