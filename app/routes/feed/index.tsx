@@ -112,7 +112,7 @@ export default function Feed() {
 	}
 
 	return (
-    <table className="w-full md:w-[calc(100vw-25rem)]">
+    <table className="w-[95vw] md:w-[75vw] mx-auto">
       <thead>
         <tr>
           <th align="left"><h1 className="mt-4">{feed.title}</h1></th>

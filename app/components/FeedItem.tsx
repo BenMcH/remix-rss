@@ -20,14 +20,14 @@ const FeedItem: React.FC<{item: FeedItemPost}> = ({item}) => {
   return (
     <>
       <tr className="cursor-pointer border-t" onClick={() => setOpen(!open)} onPointerEnter={() => fetcher.state === 'idle' && !fetcher.data && fetcher.load(`/api/posts/${item.id}`)}>
-        <td className={`${open ? 'pt-2' : 'py-2'} md:truncate md:max-w-[75vw] pl-2`}>
+        <td className={`${open ? 'pt-2' : 'py-2'} md:truncate md:max-w-[70vw] pl-2`}>
           <span className="text-sm font-bold">{item.title}</span>
           {!open && <span className="text-xs font-light hidden md:inline">{contentSnippet}</span>}
           <noscript>
             <a href={item.link} target='_blank'>{'Open Link'}</a>
           </noscript>
         </td>
-        <td className={`${open ? 'pt-2' : 'py-2'} text-xs pl-4 text-right`}>{renderedDate}</td>
+        <td className={`${open ? 'pt-2' : 'py-2'} text-xs px-4 text-right`}>{renderedDate}</td>
       </tr>
       {open &&(
         <>
