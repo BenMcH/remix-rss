@@ -11,7 +11,7 @@ function SubscriptionForm({recent, firstFeed}: {recent: Feed, firstFeed: boolean
 
   return (
     <tr key={recent.url}>
-      <td className={!firstFeed ? `pt-4` : ''}>
+      <td className={`${!firstFeed ? `pt-4` : ''} md:w-80`}>
         <FeedLink feed={recent} />
       </td>
       <td className={!firstFeed ? `pt-4` : ''}>
@@ -34,7 +34,7 @@ const Recents: React.FC<{feeds: Feed[]}> = ({feeds}) => {
     return <></>
   }
   return (
-    <aside id="recents" className="md:w-96 md:h-screen px-4 md:py-8">
+    <aside id="recents" className="md:w-20 md:h-screen px-4 md:py-8">
       <h2>Subscriptions</h2>
       <div className="h-full overflow-y-auto pb-4 pr-2">
         <table className="mt-4">

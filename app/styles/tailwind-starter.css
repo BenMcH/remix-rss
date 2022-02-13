@@ -2,42 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  @apply dark:bg-slate-900 dark:text-slate-100;
-  @apply h-full;
+@layer base {
+	html,
+	body {
+	@apply dark:bg-slate-900 dark:text-slate-100;
+	@apply h-full;
+	}
+
+	body {
+		@apply px-2;
+	}
+
+	input {
+		@apply text-slate-800 px-2 py-1;
+	}
+
+	a {
+		@apply underline underline-offset-4;
+		@apply text-blue-500 hover:text-blue-600;
+		@apply dark:text-white dark:hover:text-white;
+	}
+
+	h1 {
+		@apply text-4xl font-bold;
+	}
+
+	h2 {
+		@apply text-3xl font-bold;
+	}
+
+	h3 {
+		@apply text-2xl font-bold;
+	}
+
+	h4 {
+		@apply text-xl font-bold;
+	}
+
+	h5 {
+		@apply text-lg font-bold;
+	}
 }
 
-body {
-	@apply px-2;
-}
-
-input {
-	@apply text-slate-800 px-2 py-1;
-}
-
-a {
-	@apply underline underline-offset-4;
-	@apply text-blue-500 hover:text-blue-600;
-	@apply dark:text-white dark:hover:text-white;
-}
-
-h1 {
-	@apply text-4xl font-bold;
-}
-
-h2 {
-	@apply text-3xl font-bold;
-}
-
-h3 {
-	@apply text-2xl font-bold;
-}
-
-h4 {
-	@apply text-xl font-bold;
-}
-
-h5 {
-	@apply text-lg font-bold;
+@layer utilities {
+	.w-20 {
+		width: 20rem;
+	}
 }
