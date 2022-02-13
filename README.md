@@ -1,53 +1,30 @@
-# Welcome to Remix!
+# Remix RSS
 
-- [Remix Docs](https://remix.run/docs)
+This is my own personal RSS reader with accounts, background fetching of new posts, and a few other features, built on top of [Remix](https://github.com/remix-run/remix)! It is my attempt to get back the feel of Google Reader.
+
+## Technologies
+
+ - [Remix](https://remix.run)
+ - [Remix Auth](https://github.com/sergiodxa/remix-auth)
+ - [Auth0](https://auth0.com)
+ - [Prisma ORM](https://prisma.io)
+ - [TailwindCSS](https://tailwindcss.com)
+ - [BullMQ](https://github.com/taskforcesh/bullmq)
+
+Deployed with Kubernetes on [K3s](https://k3s.io)!
 
 ## Development
 
-From your terminal:
+Running redis locally will allow you to test the background fetching of new posts, but is not requuired.
 
-```sh
-npm run dev
+If you are going to use the background fetching, you will need to set the `REDIS_SERVICE_HOST` environment variable to the host of the redis service (Probably `localhost`) and set `REDIS_PASSWORD` to the password used for authentication on the running redis node.
+
+Locally, you will need to create a .env file in the repo with the following content:
+
+```
+DATABASE_URL="Enter your postgres connection string here"
+CLIENT_ID="Enter an auth0 client id here"
+CLIENT_SECRET="Enter an auth0 client secret here"
 ```
 
-This starts your app in development mode, rebuilding assets on file changes.
-
-## Deployment
-
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `remix build`
-
-- `build/`
-- `public/build/`
-
-### Using a Template
-
-When you ran `npx create-remix@latest` there were a few choices for hosting. You can run that again to create a new project, then copy over your `app/` folder to the new project that's pre-configured for your target server.
-
-```sh
-cd ..
-# create a new project, and pick a pre-configured host
-npx create-remix@latest
-cd my-new-remix-app
-# remove the new project's app (not the old one!)
-rm -rf app
-# copy your app over
-cp -R ../my-old-remix-app/app app
-```
+Finally, simply `npm install` and `npm run dev` to start the development server and begin reading!
