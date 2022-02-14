@@ -4,6 +4,7 @@ import { useLoaderData } from 'remix';
 import { Feed } from '@prisma/client';
 import { db } from '~/utils/db.server';
 import FeedLink from '~/components/FeedLink';
+import { getFeed } from '~/utils/feed.server';
 
 export interface IFeed {
   url: string
@@ -27,8 +28,28 @@ export let loader: LoaderFunction = async ({request}) => {
 		return redirect('/');
 	}
 
+	if (queryParam.startsWith('http')) {
+		let url: URL | undefined;
+		
+		try {
+			url = new URL(queryParam);
+		} catch (e) {
+			if (!(e instanceof TypeError)) {
+				// URL throws a TypeError if the URL not a valid url. This will save us from a search for "http"
+				throw e;
+			}
+		}
+
+		let feed = url && await getFeed(queryParam);
+
+		if (url && feed) {
+			return redirect(`/feed/${feed.id}`);
+		}
+	}
+
 	let results = await db.feed.findMany({
 		select: {
+			id: true,
 			url: true,
 			title: true,
 			description: true
@@ -55,7 +76,7 @@ export let loader: LoaderFunction = async ({request}) => {
 };
 
 export default function Index() {
-  let data = useLoaderData<{results: Array<Pick<Feed, 'description' | 'url' | 'title'>>, queryParam: string}>();
+  let data = useLoaderData<{results: Array<Pick<Feed, 'id' | 'description' | 'title'>>, queryParam: string}>();
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-2">
@@ -63,7 +84,7 @@ export default function Index() {
 			<h1>Search Results for {data.queryParam}</h1>
 			<ul className="mt-4">
 				{data.results.map((item) => ( 
-					<li key={item.url}>
+					<li key={item.id}>
 						<FeedLink feed={item} />
 						{item.description && <p className="text-sm">{item.description}</p>}
 					</li>

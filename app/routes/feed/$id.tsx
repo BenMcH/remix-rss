@@ -2,7 +2,7 @@ import FeedItem from '~/components/FeedItem';
 import { ActionFunction, Form, Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
 import { authenticator } from "~/services/auth.server";
 import { TFeed } from '~/services/rss-types';
-import { getFeed, PAGE_SIZE } from '~/utils/feed.server';
+import { getFeed, getFeedById, PAGE_SIZE } from '~/utils/feed.server';
 import { db } from '~/utils/db.server';
 import { createFeedSubscription } from '~/utils/user.server';
 
@@ -13,18 +13,17 @@ export let meta: MetaFunction = ({data}) => {
   };
 };
 
-export let action: ActionFunction = async ({request}) => {
-  const {searchParams} = new URL(request.url);
+export let action: ActionFunction = async ({request, params}) => {
   const body = await request.formData();
 
   const action = body.get('_action')?.toString()
 
   let user = await authenticator.isAuthenticated(request);
-  const feedParam = searchParams.get('feed')?.toString();
+  const feedParam = params.id!;
 
-  if (user && feedParam) {
+  if (user) {
 
-    let feed = await getFeed(feedParam);
+    let feed = await getFeedById(feedParam);
 
     if (!feed) return {}
 
@@ -44,9 +43,9 @@ export let action: ActionFunction = async ({request}) => {
 }
 
 
-export let loader: LoaderFunction = async ({request}) => {
+export let loader: LoaderFunction = async ({request, params}) => {
   const {searchParams} = new URL(request.url);
-  const feedParam = searchParams.get('feed');
+  const feedParam = params.id!;
   let page = Number.parseInt(searchParams.get('page')?.toString() || '1', 10);
 
   if (!feedParam) {
@@ -56,7 +55,7 @@ export let loader: LoaderFunction = async ({request}) => {
   const user = await authenticator.isAuthenticated(request);
 
   try {
-    let feed = await getFeed(feedParam, page);
+    let feed = await getFeedById(feedParam, page);
 
     if (!feed) {
       return {
@@ -74,7 +73,7 @@ export let loader: LoaderFunction = async ({request}) => {
     let maxPage = Math.ceil(postCount / PAGE_SIZE);
 
     if (feed.FeedPost.length === 0) {
-      return redirect(`/feed?feed=${feedParam}&page=${maxPage}`);
+      return redirect(`/feed/${feed.id}?page=${maxPage}`);
     }
 
     let count = await db.feedSubscription.count({
@@ -87,6 +86,7 @@ export let loader: LoaderFunction = async ({request}) => {
     let state: UserState = user ? count > 0 ? 'subscribed' : 'unsubscribed' : 'logged out';
 
     const newFeed: TFeed = {
+	  id: feed.id,
       title: feed.title,
       description: feed.description,
       items: feed.FeedPost,
@@ -118,7 +118,7 @@ export default function Feed() {
           <th align="left"><h1 className="mt-4">{feed.title}</h1></th>
           <th align="right">
             {state !== 'logged out' &&
-            <Form method="post" action={`/feed?index&feed=${feed.url}`} replace>
+            <Form method="post" action={`/feed/${feed.id}`} replace>
               {state === 'subscribed' ? (
                 <button name="_action" value="unsubscribe" className="bg-red-500 border-red-500 text-white px-4 py-2 border rounded-md">
                   Unsubscribe 
@@ -150,8 +150,8 @@ export default function Feed() {
       <tfoot>
         <tr>
           <td className="pb-2" colSpan={2}>
-            {page > 1 && (<><Link to={`/feed?feed=${feed.url}&page=${page-1}`}>{'Prev'}</Link> | </>)}
-            {page < maxPage && (<Link to={`/feed?feed=${feed.url}&page=${page+1}`}>{'Next'}</Link> )}
+            {page > 1 && (<><Link to={`/feed/${feed.id}?page=${page-1}`}>{'Prev'}</Link> | </>)}
+            {page < maxPage && (<Link to={`/feed/${feed.id}?page=${page+1}`}>{'Next'}</Link> )}
           </td>
         </tr>
       </tfoot>

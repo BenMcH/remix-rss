@@ -20,15 +20,15 @@ export default function FeedSearch() {
 	}, [transition.state])
 
 	return (
-      <Form method="post" action="/?index" className="flex flex-row gap-4" ref={ref}>
+      <Form action="/feed/search" className="flex flex-row gap-4" ref={ref}>
         <label>
-			{'Search:'} <input type="text" name="feed" className="border" list="search-list" onInput={(event) => {
+			{'Search:'} <input type="text" name="query" className="border" list="search-list" onInput={(event) => {
 				if (ref.current){ 
 					let formData = new FormData(ref.current)
-					let feed = formData.get('feed')?.toString()
+					let feed = formData.get('query')?.toString()
 
 					if (feed) {
-						searchFetcher.load('/feed/search?query=' + formData.get('feed')?.toString())
+						searchFetcher.load('/feed/search?query=' + formData.get('query')?.toString())
 					}
 				}
 			}} />

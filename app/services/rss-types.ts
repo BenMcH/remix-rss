@@ -1,4 +1,5 @@
 export type TFeed = {
+	id: string
 	description: string
 	image?: string
 	items: Array<FeedItemPost>

@@ -11,7 +11,7 @@ export let meta: MetaFunction = () => {
 export let loader: LoaderFunction = async () => {
 	let data = await db.feed.findMany({
 		select: {
-			url: true,
+			id: true,
 			title: true
 		},
 		orderBy: {
@@ -25,7 +25,7 @@ export let loader: LoaderFunction = async () => {
 }
 
 export default function FeedList() {
-	const {data} = useLoaderData<{data: {url: string, title: string}[]}>();
+	const {data} = useLoaderData<{data: {id: string, url: string, title: string}[]}>();
 
 	return (
 		<main className="max-w-xl mx-auto">
