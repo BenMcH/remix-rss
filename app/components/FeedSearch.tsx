@@ -39,7 +39,7 @@ export default function FeedSearch() {
 			</datalist>
 		</label>
         <span className="flex flex-row items-end"><button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600 py-1" disabled={submitting}>{submitting ? 'Loading' : 'Go'}</button></span>
-        <Link to="/all_feeds">{'All Feeds'}</Link>
+        <Link to="/feed/all">{'All Feeds'}</Link>
       </Form>
 	);
 }

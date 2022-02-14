@@ -30,7 +30,7 @@ export default function FeedList() {
 	return (
 		<main className="max-w-xl mx-auto">
 			<h1>All known feeds</h1>
-			<ul className="mt-4">
+			<ul className="flex flex-col gap-2">
 				{data.map((item) => ( 
 					<li key={item.url}><FeedLink feed={item} /></li>
 				))}
