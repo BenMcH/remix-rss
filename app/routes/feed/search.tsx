@@ -33,18 +33,17 @@ export let loader: LoaderFunction = async ({request}) => {
 		
 		try {
 			url = new URL(queryParam);
+			let feed = url && await getFeed(queryParam);
+
+			if (url && feed) {
+				return redirect(`/feed/${feed.id}`);
+			}
 		} catch (e) {
-			if (!(e instanceof TypeError)) {
-				// URL throws a TypeError if the URL not a valid url. This will save us from a search for "http"
-				throw e;
+			return {
+				results: []
 			}
 		}
 
-		let feed = url && await getFeed(queryParam);
-
-		if (url && feed) {
-			return redirect(`/feed/${feed.id}`);
-		}
 	}
 
 	let results = await db.feed.findMany({
