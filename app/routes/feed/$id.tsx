@@ -48,10 +48,6 @@ export let loader: LoaderFunction = async ({request, params}) => {
   const feedParam = params.id!;
   let page = Number.parseInt(searchParams.get('page')?.toString() || '1', 10);
 
-  if (!feedParam) {
-	  throw redirect('/')
-  }
-
   const user = await authenticator.isAuthenticated(request);
 
   try {

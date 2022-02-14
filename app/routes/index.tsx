@@ -36,19 +36,6 @@ export let action: ActionFunction = async ({request}) => {
 
     return {}
   }
-
-  if (!feed) {
-    return {error: 'feed is required'};
-  }
-
-  if (!feed.startsWith('http')) {
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.set('query', feed);
-    
-    return redirect(`/feed/search?${urlSearchParams.toString()}`);
-  }
-
-  return redirect(`/feed?feed=${feed}`);
 }
 
 export let loader: LoaderFunction = async ({request}) => {
