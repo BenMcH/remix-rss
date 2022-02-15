@@ -6,7 +6,7 @@ export let loader: LoaderFunction = async ({request}) => {
 	let params = new URLSearchParams(query);
 
 	if (params.get('schedule')) {
-		await rssFanout.add('rss-fanout', {})
+		await rssFanout.add('rss-fanout', null)
 	}
 
 	let fanout = await rssFanout.getDelayed()
