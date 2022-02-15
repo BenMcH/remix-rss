@@ -72,12 +72,12 @@ export let loader: LoaderFunction = async ({request, params}) => {
       return redirect(`/feed/${feed.id}?page=${maxPage}`);
     }
 
-    let count = await db.feedSubscription.count({
+    let count = user ? await db.feedSubscription.count({
       where: {
-        user: user!, 
+        user: user, 
         feedId: feed.id
       }
-    });
+    }) : 0;
 
     let state: UserState = user ? count > 0 ? 'subscribed' : 'unsubscribed' : 'logged out';
 
