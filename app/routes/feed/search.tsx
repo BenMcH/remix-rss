@@ -28,7 +28,7 @@ export let loader: LoaderFunction = async ({request}) => {
 		return redirect('/');
 	}
 
-	if (queryParam.match(/^\/?r\/\w+/)) {
+	if (queryParam.match(/^\/?r\/[\w_]+$/)) {
 		queryParam = `/${queryParam}`.replace('//', '/')
 
 		queryParam = `https://reddit.com${queryParam}.rss`;
