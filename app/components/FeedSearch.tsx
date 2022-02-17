@@ -22,6 +22,7 @@ export default function FeedSearch() {
 	return (
       <Form action="/feed/search" className="flex flex-row gap-4" ref={ref}>
         <label>
+			<input type="hidden" name="_action" value="submit" />
 			{'Search:'} <input type="text" name="query" className="border" list="search-list" onInput={(event) => {
 				if (ref.current){ 
 					let formData = new FormData(ref.current)
@@ -38,7 +39,11 @@ export default function FeedSearch() {
 				))}
 			</datalist>
 		</label>
-        <span className="flex flex-row items-end"><button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600 py-1" disabled={submitting}>{submitting ? 'Loading' : 'Go'}</button></span>
+        <span className="flex flex-row items-end">
+			<button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600 py-1" disabled={submitting}>
+				{submitting ? 'Loading' : 'Go'}
+			</button>
+		</span>
         <Link to="/feed/all">{'All Feeds'}</Link>
       </Form>
 	);

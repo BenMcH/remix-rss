@@ -28,12 +28,18 @@ export let loader: LoaderFunction = async ({request}) => {
 		return redirect('/');
 	}
 
-	if (queryParam.startsWith('http')) {
+	if (queryParam.match(/^\/?r\/\w+/)) {
+		queryParam = `/${queryParam}`.replace('//', '/')
+
+		queryParam = `https://reddit.com${queryParam}.rss`;
+	}
+
+	if (queryParam.startsWith('http') && params.get('_action') === 'submit') {
 		let url: URL | undefined;
 		
 		try {
 			url = new URL(queryParam);
-			let feed = url && await getFeed(queryParam);
+			let feed = url && await getFeed(queryParam).catch(() => undefined);
 
 			if (url && feed) {
 				return redirect(`/feed/${feed.id}`);
@@ -43,7 +49,6 @@ export let loader: LoaderFunction = async ({request}) => {
 				results: []
 			}
 		}
-
 	}
 
 	let results = await db.feed.findMany({
