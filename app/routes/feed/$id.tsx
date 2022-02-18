@@ -48,12 +48,19 @@ export let loader: LoaderFunction = async ({request, params}) => {
   const feedParam = params.id!;
   let page = Number.parseInt(searchParams.get('page')?.toString() || '1', 10);
 
+  if (page < 1) {
+    return {
+      feed: null,
+      error: 'Feed not found'
+    }
+  }
+
   const user = await authenticator.isAuthenticated(request);
 
   try {
     let feed = await getFeedById(feedParam, page);
 
-    if (!feed) {
+    if (!feed || page < 1) {
       return {
         feed: null,
         error: 'Feed not found'

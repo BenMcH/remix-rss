@@ -79,7 +79,7 @@ async function getFeed(url: string, page = 1): Promise<TDbFeed | null> {
 async function createFeed(url: string) {
 	const feed = await rss.getFeed(url);
 	
-	if (feed) {
+	if (feed && feed.items.length) {
 		let dbFeed = await db.feed.create({
 			data: {
 				url,

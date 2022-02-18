@@ -39,7 +39,7 @@ export let loader: LoaderFunction = async ({request}) => {
 		
 		try {
 			url = new URL(queryParam);
-			let feed = url && await getFeed(queryParam).catch(() => undefined);
+			let feed = url && await getFeed(queryParam, 1).catch(() => undefined);
 
 			if (url && feed) {
 				return redirect(`/feed/${feed.id}`);
