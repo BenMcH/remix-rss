@@ -38,7 +38,13 @@ if (process.env.REDIS_PASSWORD) {
 		log(`fetched rss feed: ${job.data.url}`)
 	}, {
 		connection: getRedisConnection(),
-	})
+	});
+
+	setInterval(() => {
+		if (!global.__rssQueueWorker?.isRunning()) {
+			global.__rssQueueWorker?.run();
+		}
+	}, 60000)
 
 	global.__rssSchedulers ||= []
 
