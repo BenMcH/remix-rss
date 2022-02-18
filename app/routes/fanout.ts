@@ -9,12 +9,14 @@ export let loader: LoaderFunction = async ({request}) => {
 		await rssFanout.add('rss-fanout', null)
 	}
 
-	let fanout = await rssFanout.getDelayed()
-	let rss = await rssQueue.getDelayed()
+	let active = await rssQueue.getActive();
+	let waiting = await rssQueue.getWaiting()
+	let delayed = await rssQueue.getDelayed();
 
 	return {
-		rss,
-		fanout
+		active,
+		delayed,
+		waiting
 	}
 }
 

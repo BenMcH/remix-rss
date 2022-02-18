@@ -65,8 +65,6 @@ if (process.env.REDIS_PASSWORD) {
 
 	global.__rssFanoutWorker ||= new Worker('rss-fanout', async (job) => {
 		log("Starting fan-out for rss feeds")
-		await global.__rssQueue?.drain();
-
 		let feeds = await db.feed.findMany({
 			select: {
 				url: true
