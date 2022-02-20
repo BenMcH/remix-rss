@@ -78,7 +78,8 @@ if (process.env.REDIS_PASSWORD) {
 				url: feed.url
 			},
 			opts: {
-				jobId: feed.url
+				jobId: feed.url,
+				timeout: 15000
 			}
 		})))
 	}, {connection: getRedisConnection()});
