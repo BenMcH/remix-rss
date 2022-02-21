@@ -13,19 +13,22 @@ const getRedisConnection = () => {
 	});
 };
 
+type Undefinable<T, v = undefined> = T | v;
+
 declare global {
-  var __rssQueue: Queue<{url: string}> | undefined;
-  var __rssQueueWorker: Worker<{url: string}> | undefined;
-  var __rssFanoutQueue: Queue<null> | undefined;
-  var __rssFanoutWorker: Worker<null> | undefined;
-  var __rssSchedulers: Array<QueueScheduler> | undefined;
+  var __rssQueue: Undefinable<Queue<{url: string}>>;
+  var __rssFanoutQueue: Undefinable<Queue<null>>;
+  var __rssWorkers: {[key: string]: Undefinable<Worker>} | undefined;
+  var __rssSchedulers: {[key: string]: Undefinable<QueueScheduler>} | undefined;
 }
 
 let rssQueue: Queue<{url: string}>;
 let rssFanout: Queue<null>;
 
-if (process.env.REDIS_PASSWORD) {
-	rssQueue = global.__rssQueue || (global.__rssQueue = new Queue<{url: string}>('rss-fetch', {
+if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.REDIS) {
+	let queueName = 'rss-fetch';
+
+	rssQueue = global.__rssQueue || (global.__rssQueue = new Queue<{url: string}>(queueName, {
 		connection: getRedisConnection(),
 		defaultJobOptions: {
 			removeOnComplete: true,
@@ -33,7 +36,9 @@ if (process.env.REDIS_PASSWORD) {
 		}
 	}));
 
-	global.__rssQueueWorker ||= new Worker('rss-fetch', async (job) => {
+	global.__rssWorkers ||= {};
+
+	global.__rssWorkers[queueName] ||= new Worker(queueName, async (job) => {
 		await getFeed(job.data.url)
 		log(`fetched rss feed: ${job.data.url}`)
 	}, {
@@ -41,21 +46,20 @@ if (process.env.REDIS_PASSWORD) {
 	});
 
 	setInterval(() => {
-		if (!global.__rssQueueWorker?.isRunning()) {
-			global.__rssQueueWorker?.run();
+		if (global.__rssWorkers && !global.__rssWorkers['rss-fetch']?.isRunning()) {
+			global.__rssWorkers['rss-fetch']?.run();
 		}
 	}, 60000)
 
-	global.__rssSchedulers ||= []
+	global.__rssSchedulers ||= {}
 
-	if (global.__rssSchedulers.length === 0) {
-		global.__rssSchedulers.push(new QueueScheduler('rss-fetch', {
-			connection: getRedisConnection(),
-		}))
-	}
+	global.__rssSchedulers[queueName] ||= (new QueueScheduler(queueName, {
+		connection: getRedisConnection(),
+	}))
 
+	queueName = 'rss-fanout'
 
-	rssFanout = global.__rssFanoutQueue || (global.__rssFanoutQueue = new Queue('rss-fanout', {
+	rssFanout = global.__rssFanoutQueue || (global.__rssFanoutQueue = new Queue(queueName, {
 		connection: getRedisConnection(),
 		defaultJobOptions: {
 			removeOnComplete: true,
@@ -63,7 +67,7 @@ if (process.env.REDIS_PASSWORD) {
 		}
 	}));
 
-	global.__rssFanoutWorker ||= new Worker('rss-fanout', async (job) => {
+	global.__rssWorkers[queueName]||= new Worker(queueName, async (job) => {
 		log("Starting fan-out for rss feeds")
 		let feeds = await db.feed.findMany({
 			select: {
@@ -84,11 +88,9 @@ if (process.env.REDIS_PASSWORD) {
 		})))
 	}, {connection: getRedisConnection()});
 
-	if (global.__rssSchedulers.length === 1) {
-		global.__rssSchedulers.push(new QueueScheduler('rss-fanout', {
-			connection: getRedisConnection(),
-		}))
-	}
+	global.__rssSchedulers[queueName] ||= (new QueueScheduler('rss-fanout', {
+		connection: getRedisConnection(),
+	}))
 
 	global.__rssFanoutQueue.drain().then(() => {
 		log("Adding job")
