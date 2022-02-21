@@ -10,6 +10,7 @@ datasource db {
 model User {
   id                String             @id @default(uuid())
   email             String             @unique
+  isAdmin           Boolean            @default(false)
   feedSubscriptions FeedSubscription[]
 }
 
