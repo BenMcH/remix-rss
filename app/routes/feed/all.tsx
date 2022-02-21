@@ -1,5 +1,5 @@
-import { Feed } from "@prisma/client";
-import { LoaderFunction, useLoaderData, MetaFunction, Form, ActionFunction, redirect, json, useFetcher, useTransition } from "remix";
+import { useEffect } from "react";
+import { LoaderFunction, useLoaderData, MetaFunction, Form, ActionFunction, redirect, json, useFetcher, useTransition, useActionData } from "remix";
 import FeedLink from "~/components/FeedLink";
 import { authenticator } from "~/services/auth.server";
 import { db } from "~/utils/db.server";
@@ -16,7 +16,7 @@ export let action: ActionFunction = async ({request}) => {
 	let isAdmin = user && user.isAdmin;
 
 	if (!isAdmin) {
-		return redirect('/feed/all')
+		return json('Only admins can perform this action');
 	}
 
 	let body = await request.formData();
@@ -24,7 +24,7 @@ export let action: ActionFunction = async ({request}) => {
 	let deletedFeed = body.get('feedId')?.toString();
 
 	if (!deletedFeed) {
-		return json("No feedId provided", 400);
+		return json("No feedId provided");
 	}
 
 	await db.feedSubscription.deleteMany({
@@ -39,20 +39,24 @@ export let action: ActionFunction = async ({request}) => {
 		}
 	});
 
-	await db.feed.delete({
+	let {title} = await db.feed.delete({
 		where: {
 			id: deletedFeed
+		},
+		select: {
+			title: true
 		}
 	})
 
-	return "successfully deleted feed"
+	return `successfully deleted feed: ${title}`;
 }
 
 export let loader: LoaderFunction = async ({request}) => {
 	let data = await db.feed.findMany({
 		select: {
 			id: true,
-			title: true
+			title: true,
+			url: true
 		},
 		orderBy: {
 			title: "asc"
@@ -77,7 +81,6 @@ type FeedPost = {
 
 export default function FeedList() {
 	const {data, isAdmin} = useLoaderData<{data: FeedPost[], isAdmin: boolean}>();
-	const fetcher = useFetcher();
 
 	return (
 		<main className="max-w-xl mx-auto">
@@ -97,6 +100,12 @@ export default function FeedList() {
 function FeedRow({feed, isAdmin}: {feed: FeedPost, isAdmin: boolean}) {
 	let fetcher = useFetcher();
 
+	useEffect(() => {
+		if (fetcher.data && !fetcher.data.startsWith('successfully')) {
+			alert(fetcher.data)
+		}
+	}, [fetcher.data])
+
 	if (fetcher.state !== 'idle') {
 		return null;
 	}
@@ -109,7 +118,7 @@ function FeedRow({feed, isAdmin}: {feed: FeedPost, isAdmin: boolean}) {
 					<button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600 my-2 mr-2">&times;</button>
 				</fetcher.Form>
 			</td>}
-			<td><FeedLink feed={feed} /></td>
+			<td><FeedLink feed={feed} linkHint /></td>
 		</tr>
 	)
 };
