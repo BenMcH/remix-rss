@@ -2,26 +2,17 @@ import { db } from "../utils/db.server";
 import * as rss from '~/services/rss.server';
 import { insertFeedPosts } from "./feedPost.server";
 import { TNetworkRssFeed } from "~/services/rss-types";
-import { Feed } from "@prisma/client";
+import { Feed, FeedPost } from "@prisma/client";
+import { Nullable } from "~/utils/types";
 
 const PAGE_SIZE = 20;
 
-type TDbFeed = {
-	title: string;
-	url: string;
-	description: string;
-	id: string;
-	FeedPost: {
-		title: string;
-		id: string;
-		contentSnippet: string;
-		date: string;
-		link: string;
-	}[];
+type TDbFeed = Pick<Feed, 'id' | 'title' | 'url' | 'description'> & {
+	FeedPost: Array<Pick<FeedPost, 'id' | 'title' | 'link' | 'contentSnippet' | 'date'>>
 }
 
-async function getFeedById(id: Feed['id'], page = 1): Promise<TDbFeed | null> {
-	let feed = await db.feed.findFirst({
+async function getFeedById(id: Feed['id'], page = 1): Promise<Nullable<TDbFeed>> {
+	let feed: Nullable<TDbFeed>  = await db.feed.findFirst({
 		where: {id},
 		select: {
 			title: true,
@@ -48,8 +39,8 @@ async function getFeedById(id: Feed['id'], page = 1): Promise<TDbFeed | null> {
 	return feed;
 }
 
-async function getFeed(url: string, page = 1): Promise<TDbFeed | null> {
-	let feed = await db.feed.findFirst({
+async function getFeed(url: string, page = 1): Promise<Nullable<TDbFeed>> {
+	let feed: Nullable<TDbFeed>  = await db.feed.findFirst({
 		where: {url},
 		select: {
 			title: true,
@@ -80,7 +71,7 @@ async function createFeed(url: string) {
 	const feed = await rss.getFeed(url);
 	
 	if (feed && feed.items.length) {
-		let dbFeed = await db.feed.create({
+		let dbFeed: Omit<TDbFeed, 'FeedPost'> = await db.feed.create({
 			data: {
 				url,
 				title: feed.title,

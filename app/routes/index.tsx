@@ -3,9 +3,9 @@ import { useLoaderData } from 'remix';
 
 import Recents from '~/components/Recents';
 import { authenticator } from '~/services/auth.server';
-import * as userService from '~/services/user.server';
 import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
+import { deleteSubscription, getSubscribedFeeds } from '~/services/subscription.server';
 
 export interface IFeed {
   url: string
@@ -32,7 +32,7 @@ export let action: ActionFunction = async ({request}) => {
       return {error: 'id is required'};
     }
 
-    await userService.deleteSubscription(user, id);
+    await deleteSubscription(user, id);
 
     return {}
   }
@@ -41,7 +41,7 @@ export let action: ActionFunction = async ({request}) => {
 export let loader: LoaderFunction = async ({request}) => {
   const user = await authenticator.isAuthenticated(request);
 
-  const userFeeds = user ? await userService.getSubscribedFeeds(user) : [];
+  const userFeeds = user ? await getSubscribedFeeds(user) : [];
 
   return {
     email: user?.email,

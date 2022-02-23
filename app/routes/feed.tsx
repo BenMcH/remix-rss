@@ -3,9 +3,9 @@ import { useLoaderData } from 'remix';
 
 import Recents from '~/components/Recents';
 import { authenticator } from '~/services/auth.server';
-import * as userService from '~/services/user.server';
 import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
+import { getSubscribedFeeds } from '~/services/subscription.server';
 
 export interface IFeed {
   url: string
@@ -15,7 +15,7 @@ export interface IFeed {
 export let loader: LoaderFunction = async ({request}) => {
   const user = await authenticator.isAuthenticated(request);
 
-  const userFeeds = user ? await userService.getSubscribedFeeds(user) : [];
+  const userFeeds = user ? await getSubscribedFeeds(user) : [];
 
   return {email: user?.email, userFeeds}
 };
