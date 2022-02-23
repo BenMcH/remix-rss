@@ -88,7 +88,7 @@ function FeedRow({feed, isAdmin}: {feed: FeedPost, isAdmin: boolean}) {
 					<button type="submit" className="px-4 border bg-slate-200 dark:bg-slate-600 my-2 mr-2">&times;</button>
 				</fetcher.Form>
 			</td>}
-			<td><FeedLink feed={feed} linkHint /></td>
+			<td className="flex flex-wrap"><FeedLink feed={feed} linkHint /></td>
 		</tr>
 	)
 };
