@@ -20,8 +20,8 @@ async function getSubscribedFeeds(user: Pick<User, 'id'>) {
 async function isUserSubscribed(user: Pick<User, 'id'>, feed: Pick<Feed, 'id'>) {
 	return db.feedSubscription.count({
 		where: {
-			user,
-			feed
+			userId: user.id,
+			feedId: feed.id
 		}
 	}).then(ans => ans > 0);
 }

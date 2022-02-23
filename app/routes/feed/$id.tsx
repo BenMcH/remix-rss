@@ -14,12 +14,13 @@ export let meta: MetaFunction = ({data}) => {
 };
 
 export let action: ActionFunction = async ({request, params}) => {
-  const body = await request.formData();
+  let [body, user] = await Promise.all([
+    request.formData(),
+    authenticator.isAuthenticated(request)
+  ]);
 
-  const action = body.get('_action')?.toString()
-
-  let user = await authenticator.isAuthenticated(request);
-  const feedParam = params.id!;
+  let action = body.get('_action')?.toString()
+  let feedParam = params.id!;
 
   if (user) {
 
