@@ -1,7 +1,7 @@
 import type { Feed, User } from "@prisma/client";
 import { db } from "~/utils/db.server";
 
-async function getSubscribedFeeds(user: User) {
+async function getSubscribedFeeds(user: Pick<User, 'id'>) {
 	return db.feedSubscription.findMany({
 		where: {
 			user
@@ -17,7 +17,16 @@ async function getSubscribedFeeds(user: User) {
 	}).then(subscriptions => subscriptions.map(subscription => subscription.feed));
 }
 
-async function deleteSubscription(user: User | null, feedId: string) {
+async function isUserSubscribed(user: Pick<User, 'id'>, feed: Pick<Feed, 'id'>) {
+	return db.feedSubscription.count({
+		where: {
+			user,
+			feed
+		}
+	}).then(ans => ans > 0);
+}
+
+async function deleteSubscription(user: Pick<User, 'id'> | null, feedId: string) {
 	if (!user) return;
 	await db.feedSubscription.deleteMany({
 		where: {
@@ -43,5 +52,6 @@ async function createFeedSubscription(user: Pick<User, 'id'>, feed: Pick<Feed, '
 export {
 	getSubscribedFeeds,
 	createFeedSubscription,
-	deleteSubscription
+	deleteSubscription,
+	isUserSubscribed
 }

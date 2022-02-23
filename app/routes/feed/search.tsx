@@ -2,9 +2,8 @@ import { MetaFunction, LoaderFunction, redirect } from 'remix';
 import { useLoaderData } from 'remix';
 
 import { Feed } from '@prisma/client';
-import { db } from '~/utils/db.server';
 import FeedLink from '~/components/FeedLink';
-import { getFeed } from '~/services/feed.server';
+import { getFeed, searchFeeds } from '~/services/feed.server';
 
 export interface IFeed {
   url: string
@@ -51,30 +50,7 @@ export let loader: LoaderFunction = async ({request}) => {
 		}
 	}
 
-	let results = await db.feed.findMany({
-		select: {
-			id: true,
-			url: true,
-			title: true,
-			description: true
-		},
-		where: {
-			OR: [
-				{
-					title: {
-						contains: queryParam,
-						mode: 'insensitive'
-					},
-				},
-				{
-					description: {
-						contains: queryParam,
-						mode: 'insensitive'
-					},
-				}
-			]
-		}
-	});
+	let results = await searchFeeds(queryParam);
 
 	return {results, queryParam}
 };

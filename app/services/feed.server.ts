@@ -11,6 +11,19 @@ type TDbFeed = Pick<Feed, 'id' | 'title' | 'url' | 'description'> & {
 	FeedPost: Array<Pick<FeedPost, 'id' | 'title' | 'link' | 'contentSnippet' | 'date'>>
 }
 
+async function getAllFeeds() {
+	return db.feed.findMany({
+		select: {
+			id: true,
+			title: true,
+			url: true
+		},
+		orderBy: {
+			title: "asc"
+		}
+	});
+}
+
 async function getFeedById(id: Feed['id'], page = 1): Promise<Nullable<TDbFeed>> {
 	let feed: Nullable<TDbFeed>  = await db.feed.findFirst({
 		where: {id},
@@ -92,9 +105,54 @@ async function createFeed(url: string) {
 	return null;
 }
 
+async function deleteFeed(feed: Pick<Feed, 'id'>) {
+	await db.feedSubscription.deleteMany({
+		where: { feed }
+	});
+
+	await db.feedPost.deleteMany({
+		where: { feed }
+	});
+
+	await db.feed.deleteMany({
+		where: { id: feed.id }
+	});
+}
+
+async function searchFeeds(query: string) {
+	return db.feed.findMany({
+		select: {
+			id: true,
+			url: true,
+			title: true,
+			description: true
+		},
+		where: {
+			OR: [
+				{
+					title: {
+						contains: query,
+						mode: 'insensitive'
+					},
+				},
+				{
+					description: {
+						contains: query,
+						mode: 'insensitive'
+					},
+				}
+			]
+		}
+	});
+
+}
+
 export {
 	createFeed,
+	deleteFeed,
+	getAllFeeds,
 	getFeed,
 	getFeedById,
+	searchFeeds,
 	PAGE_SIZE
 }

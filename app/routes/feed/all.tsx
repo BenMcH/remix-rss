@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { LoaderFunction, useLoaderData, MetaFunction, Form, ActionFunction, redirect, json, useFetcher, useTransition, useActionData } from "remix";
 import FeedLink from "~/components/FeedLink";
 import { authenticator } from "~/services/auth.server";
-import { db } from "~/utils/db.server";
+import { deleteFeed, getAllFeeds } from "~/services/feed.server";
 
 export let meta: MetaFunction = () => {
 	return {
@@ -16,7 +16,7 @@ export let action: ActionFunction = async ({request}) => {
 	let isAdmin = user && user.isAdmin;
 
 	if (!isAdmin) {
-		return json('Only admins can perform this action');
+		return json("Only admins can perform this action");
 	}
 
 	let body = await request.formData();
@@ -27,43 +27,13 @@ export let action: ActionFunction = async ({request}) => {
 		return json("No feedId provided");
 	}
 
-	await db.feedSubscription.deleteMany({
-		where: {
-			feedId: deletedFeed
-		}
-	});
+	await deleteFeed({id: deletedFeed})
 
-	await db.feedPost.deleteMany({
-		where: {
-			feedId: deletedFeed
-		}
-	});
-
-	let {title} = await db.feed.delete({
-		where: {
-			id: deletedFeed
-		},
-		select: {
-			title: true
-		}
-	})
-
-	return `successfully deleted feed: ${title}`;
+	return "successfully deleted feed";
 }
 
 export let loader: LoaderFunction = async ({request}) => {
-	let data = await db.feed.findMany({
-		select: {
-			id: true,
-			title: true,
-			url: true
-		},
-		orderBy: {
-			title: "asc"
-		}
-	});
-
-	let user = await authenticator.isAuthenticated(request);
+	let [data, user] = await Promise.all([getAllFeeds(), authenticator.isAuthenticated(request)]);
 
 	let isAdmin = user && user.isAdmin;
 

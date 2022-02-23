@@ -1,16 +1,10 @@
 import { LoaderFunction } from "remix";
-import { db } from "~/utils/db.server";
+import { getPostContent } from "~/services/feedPost.server";
 
 export const loader: LoaderFunction = async ({params}) => {
-	const postId = params.postId
+	const postId = params.postId!; // Guaranteed because we had to have one to land on this route
 
-	const post = await db.feedPost.findFirst({
-		where: {
-			id: postId,
-		}, select: {
-			content: true,
-		}
-	});
+	const post = await getPostContent(postId)
 
 	return {post}
 }

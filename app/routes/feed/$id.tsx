@@ -3,8 +3,8 @@ import { ActionFunction, Form, Link, LoaderFunction, MetaFunction, redirect, use
 import { authenticator } from "~/services/auth.server";
 import { TFeed } from '~/services/rss-types';
 import { getFeedById, PAGE_SIZE } from '~/services/feed.server';
-import { db } from '~/utils/db.server';
-import { createFeedSubscription } from '~/services/subscription.server';
+import { createFeedSubscription, deleteSubscription, isUserSubscribed } from '~/services/subscription.server';
+import { countFeedPosts, getPostContent } from '~/services/feedPost.server';
 
 export let meta: MetaFunction = ({data}) => {
   return {
@@ -30,12 +30,7 @@ export let action: ActionFunction = async ({request, params}) => {
     if (action === 'subscribe') {
       await createFeedSubscription(user, feed)
     } else if (action === 'unsubscribe') {
-      await db.feedSubscription.deleteMany({
-        where: {
-          userId: user.id,
-          feedId: feed.id
-        }
-      })
+      await deleteSubscription(user, feed.id)
     }
 
     return {}
@@ -67,11 +62,7 @@ export let loader: LoaderFunction = async ({request, params}) => {
       }
     }
 
-    let postCount = await db.feedPost.count({
-      where: {
-        feedId: feed.id
-      }
-    });
+    let postCount = await countFeedPosts(feed)
 
     let maxPage = Math.ceil(postCount / PAGE_SIZE);
 
@@ -79,12 +70,7 @@ export let loader: LoaderFunction = async ({request, params}) => {
       return redirect(`/feed/${feed.id}?page=${maxPage}`);
     }
 
-    let count = user ? await db.feedSubscription.count({
-      where: {
-        user: user, 
-        feedId: feed.id
-      }
-    }) : 0;
+    let count = user ? await isUserSubscribed(user, feed) : 0;
 
     let state: UserState = user ? count > 0 ? 'subscribed' : 'unsubscribed' : 'logged out';
 
