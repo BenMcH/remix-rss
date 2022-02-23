@@ -3,7 +3,7 @@ import { useLoaderData } from 'remix';
 
 import Recents from '~/components/Recents';
 import { authenticator } from '~/services/auth.server';
-import * as userService from '~/utils/user.server';
+import * as userService from '~/services/user.server';
 import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
 

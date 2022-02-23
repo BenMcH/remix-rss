@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { Authenticator } from 'remix-auth';
 import { Auth0Strategy } from 'remix-auth-auth0';
 import { sessionStorage } from '~/services/session.server';
-import { createUser, getUserByEmail } from '~/utils/user.server';
+import { createUser, getUserByEmail } from '~/services/user.server';
 
 export let authenticator = new Authenticator<User>(sessionStorage, {
   sessionErrorKey: 'error',

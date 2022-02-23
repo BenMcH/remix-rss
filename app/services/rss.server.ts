@@ -1,5 +1,5 @@
 import Parser from 'rss-parser';
-import { insertFeedPosts } from '~/utils/feedPost.server';
+import { insertFeedPosts } from '~/services/feedPost.server';
 import { TNetworkRssFeed } from './rss-types';
 
 const parser = new Parser();

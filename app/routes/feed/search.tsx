@@ -4,7 +4,7 @@ import { useLoaderData } from 'remix';
 import { Feed } from '@prisma/client';
 import { db } from '~/utils/db.server';
 import FeedLink from '~/components/FeedLink';
-import { getFeed } from '~/utils/feed.server';
+import { getFeed } from '~/services/feed.server';
 
 export interface IFeed {
   url: string
@@ -80,7 +80,7 @@ export let loader: LoaderFunction = async ({request}) => {
 };
 
 export default function Index() {
-  let data = useLoaderData<{results: Array<Pick<Feed, 'id' | 'description' | 'title'>>, queryParam: string}>();
+  let data = useLoaderData<{results: Array<Pick<Feed, 'id' | 'description' | 'title' | 'url'>>, queryParam: string}>();
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-2">

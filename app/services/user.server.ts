@@ -1,5 +1,5 @@
 import { Feed, User } from '@prisma/client';
-import { db } from './db.server';
+import { db } from '../utils/db.server';
 
 export type {
 	User

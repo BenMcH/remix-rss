@@ -2,9 +2,9 @@ import FeedItem from '~/components/FeedItem';
 import { ActionFunction, Form, Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
 import { authenticator } from "~/services/auth.server";
 import { TFeed } from '~/services/rss-types';
-import { getFeed, getFeedById, PAGE_SIZE } from '~/utils/feed.server';
+import { getFeedById, PAGE_SIZE } from '~/services/feed.server';
 import { db } from '~/utils/db.server';
-import { createFeedSubscription } from '~/utils/user.server';
+import { createFeedSubscription } from '~/services/user.server';
 
 export let meta: MetaFunction = ({data}) => {
   return {

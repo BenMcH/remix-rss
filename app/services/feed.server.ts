@@ -1,4 +1,4 @@
-import { db } from "./db.server";
+import { db } from "../utils/db.server";
 import * as rss from '~/services/rss.server';
 import { insertFeedPosts } from "./feedPost.server";
 import { TNetworkRssFeed } from "~/services/rss-types";

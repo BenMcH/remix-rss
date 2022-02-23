@@ -1,5 +1,5 @@
 import { TNetworkRssFeed } from "~/services/rss-types";
-import { db } from "./db.server";
+import { db } from "../utils/db.server";
 
 export async function insertFeedPosts(feed: TNetworkRssFeed) {
   const dbFeed = await db.feed.findFirst({

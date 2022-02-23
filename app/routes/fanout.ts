@@ -9,9 +9,11 @@ export let loader: LoaderFunction = async ({request}) => {
 		await rssFanout.add('rss-fanout', null)
 	}
 
-	let active = await rssQueue.getActive();
-	let waiting = await rssQueue.getWaiting()
-	let delayed = await rssQueue.getDelayed();
+	let [active, waiting, delayed] = await Promise.all([
+		rssQueue.getActive(),
+		rssQueue.getWaiting(),
+		rssQueue.getDelayed(),
+	])
 
 	return {
 		active,
