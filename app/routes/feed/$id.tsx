@@ -15,7 +15,7 @@ export let meta: MetaFunction = ({data}) => {
 
 export let headers: HeadersFunction = ({}) => {
   return {
-    'Cache-Control': 'private max-age=180'
+    'Cache-Control': 'private, max-age=180'
   };
 };
 
@@ -91,7 +91,7 @@ export let loader: LoaderFunction = async ({request, params}) => {
 
     return json({feed: newFeed, error: null, page, maxPage, state}, {
       headers: {
-        'Cache-Control': 'private max-age=180'
+        'Cache-Control': 'private, max-age=180'
       }
     })
   } catch(error: any) {
