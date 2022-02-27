@@ -1,8 +1,9 @@
-import {Queue, Worker, QueueScheduler} from 'bullmq';
+import { Queue as BullQueue } from 'bullmq';
 import { getFeed } from "~/services/rss.server";
 import { db } from '~/utils/db.server';
 import IORedis from 'ioredis';
 import { log } from '~/utils/logger';
+import { Queue } from '~/utils/queue.server';
 
 
 const getRedisConnection = () => {
@@ -13,61 +14,19 @@ const getRedisConnection = () => {
 	});
 };
 
-type Undefinable<T, v = undefined> = T | v;
+type Optional<T, v = undefined> = T | v;
 
-declare global {
-  var __rssQueue: Undefinable<Queue<{url: string}>>;
-  var __rssFanoutQueue: Undefinable<Queue<null>>;
-  var __rssWorkers: {[key: string]: Undefinable<Worker>} | undefined;
-  var __rssSchedulers: {[key: string]: Undefinable<QueueScheduler>} | undefined;
-}
+let rssQueue: Optional<BullQueue<{ url: string }>>;
 
-let rssQueue: Queue<{url: string}>;
-let rssFanout: Queue<null>;
+let rssFanout: Optional<BullQueue<null>>;
 
 if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.REDIS) {
-	let queueName = 'rss-fetch';
+	rssQueue = Queue('rss-fetch', async ({ data }) => {
+		await getFeed(data.url)
+		log(`fetched rss feed: ${data.url}`)
+	}, getRedisConnection());
 
-	rssQueue = global.__rssQueue || (global.__rssQueue = new Queue<{url: string}>(queueName, {
-		connection: getRedisConnection(),
-		defaultJobOptions: {
-			removeOnComplete: true,
-			removeOnFail: true,
-		}
-	}));
-
-	global.__rssWorkers ||= {};
-
-	global.__rssWorkers[queueName] ||= new Worker(queueName, async (job) => {
-		await getFeed(job.data.url)
-		log(`fetched rss feed: ${job.data.url}`)
-	}, {
-		connection: getRedisConnection(),
-	});
-
-	setInterval(() => {
-		if (global.__rssWorkers && !global.__rssWorkers['rss-fetch']?.isRunning()) {
-			global.__rssWorkers['rss-fetch']?.run();
-		}
-	}, 60000)
-
-	global.__rssSchedulers ||= {}
-
-	global.__rssSchedulers[queueName] ||= (new QueueScheduler(queueName, {
-		connection: getRedisConnection(),
-	}))
-
-	queueName = 'rss-fanout'
-
-	rssFanout = global.__rssFanoutQueue || (global.__rssFanoutQueue = new Queue(queueName, {
-		connection: getRedisConnection(),
-		defaultJobOptions: {
-			removeOnComplete: true,
-			removeOnFail: true,
-		}
-	}));
-
-	global.__rssWorkers[queueName]||= new Worker(queueName, async (job) => {
+	rssFanout = Queue('rss-fanout', async () => {
 		log("Starting fan-out for rss feeds")
 		let feeds = await db.feed.findMany({
 			select: {
@@ -76,7 +35,7 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 		});
 		log(`Scanning ${feeds.length} feeds`)
 
-		return rssQueue.addBulk(feeds.map(feed => ({
+		return rssQueue!.addBulk(feeds.map(feed => ({
 			name: 'rss-fetch',
 			data: {
 				url: feed.url
@@ -86,23 +45,7 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 				timeout: 15000
 			}
 		})))
-	}, {connection: getRedisConnection()});
-
-	global.__rssSchedulers[queueName] ||= (new QueueScheduler('rss-fanout', {
-		connection: getRedisConnection(),
-	}))
-
-	global.__rssFanoutQueue.drain().then(() => {
-		log("Adding job")
-		global.__rssFanoutQueue!.add('rss-fanout', null, {
-			repeat: {
-				every: 1000 * 60 * 30
-			},
-			jobId: 'fanout'
-		}).then(() => {
-			log("Added job")
-		});
-	})
+	}, getRedisConnection());
 }
 
 export { rssQueue, rssFanout };
