@@ -34,7 +34,7 @@ const Recents: React.FC<{feeds: Feed[]}> = ({feeds}) => {
     return <></>
   }
   return (
-    <aside id="recents" className="md:w-20 md:h-screen px-4 md:py-8">
+    <aside id="recents" className="md:w-20 md:h-screen px-4 md:py-8 md:flex-grow-0">
       <h2>Subscriptions</h2>
       <div className="h-full overflow-y-auto pb-4 pr-2">
         <table className="mt-4">
