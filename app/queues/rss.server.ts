@@ -2,7 +2,7 @@ import { Queue as BullQueue } from 'bullmq';
 import { getFeed } from "~/services/rss.server";
 import { db } from '~/utils/db.server';
 import IORedis from 'ioredis';
-import { log } from '~/utils/logger';
+import { error, log } from '~/utils/logger';
 import { Queue } from '~/utils/queue.server';
 
 
@@ -22,8 +22,12 @@ let rssFanout: Optional<BullQueue<null>>;
 
 if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.REDIS) {
 	rssQueue = Queue('rss-fetch', async ({ data }) => {
-		await getFeed(data.url)
-		log(`fetched rss feed: ${data.url}`)
+		try {
+			await getFeed(data.url)
+			log(`fetched rss feed: ${data.url}`)
+		} catch {
+			error(`failed to fetch rss feed: ${data.url}`)
+		}
 	}, getRedisConnection());
 
 	rssFanout = Queue('rss-fanout', async () => {
