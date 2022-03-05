@@ -51,10 +51,9 @@ export let loader: LoaderFunction = async ({request, params}) => {
   let page = Number.parseInt(searchParams.get('page')?.toString() || '1', 10);
 
   if (page < 1) {
-    return {
-      feed: null,
-      error: 'Feed not found'
-    }
+    return json<LoaderType>({
+      error: 'Feed not found',
+    })
   }
 
   const user = await authenticator.isAuthenticated(request);
@@ -63,10 +62,9 @@ export let loader: LoaderFunction = async ({request, params}) => {
     let feed = await getFeedById(feedParam, page);
 
     if (!feed || page < 1) {
-      return {
-        feed: null,
+      return json<LoaderType>({
         error: 'Feed not found'
-      }
+      })
     }
 
     let postCount = await countFeedPosts(feed)
@@ -89,7 +87,7 @@ export let loader: LoaderFunction = async ({request, params}) => {
       url: feed.url
     }
 
-    return json({feed: newFeed, error: null, page, maxPage, state}, {
+    return json<LoaderType>({feed: newFeed, error: null, page, maxPage, state}, {
       headers: {
         'Cache-Control': 'private, max-age=180'
       }
@@ -100,16 +98,20 @@ export let loader: LoaderFunction = async ({request, params}) => {
 };
 
 type UserState = 'unsubscribed' | 'subscribed' | 'logged out';
-type LoaderType = {feed: TFeed, error: null, page: number, maxPage: number, state: UserState} | {feed: null, error: string, page: number, maxPage: undefined, state: undefined};
+type FeedPageParams = {feed: TFeed, page: number, maxPage: number, state: UserState, error: null}
+type ErrorParams = {error: string}
+type LoaderType =  (FeedPageParams | ErrorParams)
 
 export default function Feed() {
-	const {error, feed, page, maxPage, state} = useLoaderData<LoaderType>();
+  let loaderData = useLoaderData<LoaderType>();
 
-	if (error || !feed) {
+	if (loaderData.error !== null) {
 		return (
-			<h1>Error! Unable to fetch feed. This shouldn't happen :( {error}</h1>	
+			<h1>Error! Unable to fetch feed. This shouldn't happen :( {loaderData.error}</h1>	
 		)
 	}
+
+	let {page, maxPage, state, feed} = loaderData;
 
 	return (
     <table className="w-[95vw] md:w-[80vw] mx-auto">
