@@ -4,7 +4,7 @@ import { authenticator } from "~/services/auth.server";
 import { TFeed } from '~/services/rss-types';
 import { getFeedById, PAGE_SIZE } from '~/services/feed.server';
 import { createFeedSubscription, deleteSubscription, isUserSubscribed } from '~/services/subscription.server';
-import { countFeedPosts, getPostContent } from '~/services/feedPost.server';
+import { countFeedPosts } from '~/services/feedPost.server';
 
 export let meta: MetaFunction = ({data}) => {
   return {

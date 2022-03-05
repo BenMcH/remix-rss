@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { LoaderFunction, useLoaderData, MetaFunction, Form, ActionFunction, redirect, json, useFetcher, useTransition, useActionData } from "remix";
+import { LoaderFunction, useLoaderData, MetaFunction, ActionFunction, json, useFetcher } from "remix";
 import FeedLink from "~/components/FeedLink";
 import { authenticator } from "~/services/auth.server";
 import { deleteFeed, getAllFeeds } from "~/services/feed.server";
@@ -16,7 +16,7 @@ export let action: ActionFunction = async ({request}) => {
 	let isAdmin = user && user.isAdmin;
 
 	if (!isAdmin) {
-		return json("Only admins can perform this action");
+		return json<string>("Only admins can perform this action");
 	}
 
 	let body = await request.formData();
@@ -24,23 +24,28 @@ export let action: ActionFunction = async ({request}) => {
 	let deletedFeed = body.get('feedId')?.toString();
 
 	if (!deletedFeed) {
-		return json("No feedId provided");
+		return json<string>("No feedId provided");
 	}
 
 	await deleteFeed({id: deletedFeed})
 
-	return "successfully deleted feed";
+	return json<string>("successfully deleted feed");
+}
+
+type LoaderData = {
+	data: Awaited<ReturnType<typeof getAllFeeds>>,
+	isAdmin: boolean
 }
 
 export let loader: LoaderFunction = async ({request}) => {
 	let [data, user] = await Promise.all([getAllFeeds(), authenticator.isAuthenticated(request)]);
 
-	let isAdmin = user && user.isAdmin;
+	let isAdmin = Boolean(user && user.isAdmin);
 
-	return {
+	return json<LoaderData>({
 		data,
 		isAdmin
-	}
+	})
 }
 
 type FeedPost = {
