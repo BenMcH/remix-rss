@@ -1,4 +1,4 @@
-import { LoaderFunction, Link, Outlet } from 'remix';
+import { LoaderFunction, Link, Outlet, json } from 'remix';
 import { useLoaderData } from 'remix';
 
 import Recents from '~/components/Recents';
@@ -12,16 +12,21 @@ export interface IFeed {
   name: string
 }
 
+type LoaderData = {
+  email: string | undefined,
+  userFeeds: Awaited<ReturnType<typeof getSubscribedFeeds>>
+}
+
 export let loader: LoaderFunction = async ({request}) => {
   const user = await authenticator.isAuthenticated(request);
 
   const userFeeds = user ? await getSubscribedFeeds(user) : [];
 
-  return {email: user?.email, userFeeds}
+  return json<LoaderData>({email: user?.email, userFeeds});
 };
 
 export default function FeedLayout() {
-	let data = useLoaderData<{email?: string, userFeeds: Feed[]}>();
+	let data = useLoaderData<LoaderData>();
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-2">

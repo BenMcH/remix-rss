@@ -1,4 +1,4 @@
-import { Form, ActionFunction, LoaderFunction, Link } from 'remix';
+import { Form, ActionFunction, LoaderFunction, Link, json } from 'remix';
 import { authenticator } from '~/services/auth.server';
 
 export let action: ActionFunction = async ({ request }) => {
@@ -13,7 +13,7 @@ export let loader: LoaderFunction = async ({ request }) => {
     successRedirect: '/',
   });
 
-  return {}
+  return json({});
 };
 
 export default function Screen() {

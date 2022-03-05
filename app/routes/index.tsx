@@ -1,4 +1,4 @@
-import { MetaFunction, LoaderFunction, Link, ActionFunction, redirect } from 'remix';
+import { MetaFunction, LoaderFunction, Link, ActionFunction, redirect, json } from 'remix';
 import { useLoaderData } from 'remix';
 
 import Recents from '~/components/Recents';
@@ -6,6 +6,7 @@ import { authenticator } from '~/services/auth.server';
 import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
 import { deleteSubscription, getSubscribedFeeds } from '~/services/subscription.server';
+import { Optional } from '~/utils/types';
 
 export interface IFeed {
   url: string
@@ -19,6 +20,10 @@ export let meta: MetaFunction = ({data}) => {
   };
 };
 
+type ActionData = {
+  error?: string
+}
+
 export let action: ActionFunction = async ({request}) => {
   let formData = await request.formData();
   let feed = formData.get('feed')?.toString();
@@ -29,13 +34,18 @@ export let action: ActionFunction = async ({request}) => {
   if (action === 'delete_subscription') {
     let id = formData.get('id')?.toString()
     if (!id) {
-      return {error: 'id is required'};
+      return json<ActionData>({error: 'id is required'});
     }
 
     await deleteSubscription(user, id);
 
-    return {}
+    return json<ActionData>({});
   }
+}
+
+type LoaderData = {
+  email: Optional<String>
+  userFeeds: Awaited<ReturnType<typeof getSubscribedFeeds>>
 }
 
 export let loader: LoaderFunction = async ({request}) => {
@@ -43,14 +53,14 @@ export let loader: LoaderFunction = async ({request}) => {
 
   const userFeeds = user ? await getSubscribedFeeds(user) : [];
 
-  return {
+  return json<LoaderData>({
     email: user?.email,
     userFeeds
-  }
+  })
 };
 
 export default function Index() {
-  let data = useLoaderData<{email?: string, userFeeds: Feed[]}>();
+  let data = useLoaderData<LoaderData>();
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-2">
