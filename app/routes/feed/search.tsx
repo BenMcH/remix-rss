@@ -1,4 +1,4 @@
-import { MetaFunction, LoaderFunction, redirect } from 'remix';
+import { MetaFunction, LoaderFunction, redirect, json } from 'remix';
 import { useLoaderData } from 'remix';
 
 import { Feed } from '@prisma/client';
@@ -15,6 +15,11 @@ export let meta: MetaFunction = ({data}) => {
     title: data.queryParam ? `Search Results: ${data.queryParam}` : 'Search Results',
   };
 };
+
+type LoaderData = {
+	results: Awaited<ReturnType<typeof searchFeeds>>
+	queryParam: string
+}
 
 export let loader: LoaderFunction = async ({request}) => {
 	let query = request.url.split('?')[1];
@@ -44,15 +49,16 @@ export let loader: LoaderFunction = async ({request}) => {
 				return redirect(`/feed/${feed.id}`);
 			}
 		} catch (e) {
-			return {
-				results: []
-			}
+			return json<LoaderData>({
+				results: [],
+				queryParam
+			})
 		}
 	}
 
 	let results = await searchFeeds(queryParam);
 
-	return {results, queryParam}
+	return json<LoaderData>({results, queryParam});
 };
 
 export default function Index() {
