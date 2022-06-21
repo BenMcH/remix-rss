@@ -1,4 +1,4 @@
-import { json, LoaderFunction } from "remix"
+import { json, LoaderFunction } from "@remix-run/node"
 import { rssFanout, rssQueue } from "~/queues/rss.server"
 
 export let loader: LoaderFunction = async ({ request }) => {

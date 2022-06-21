@@ -1,5 +1,5 @@
-import { MetaFunction, LoaderFunction, redirect, json } from 'remix';
-import { useLoaderData } from 'remix';
+import { MetaFunction, LoaderFunction, redirect, json } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 
 import { Feed } from '@prisma/client';
 import FeedLink from '~/components/FeedLink';

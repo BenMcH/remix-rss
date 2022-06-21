@@ -1,5 +1,5 @@
 // app/routes/auth/auth0/callback.tsx
-import type { LoaderFunction } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
 
 import { authenticator } from "~/services/auth.server";
 

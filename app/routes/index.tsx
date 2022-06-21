@@ -1,5 +1,5 @@
-import { MetaFunction, LoaderFunction, Link, ActionFunction, redirect, json } from 'remix';
-import { useLoaderData } from 'remix';
+import { MetaFunction, LoaderFunction, ActionFunction, json } from '@remix-run/node';
+import { Link,  useLoaderData } from '@remix-run/react';
 
 import Recents from '~/components/Recents';
 import { authenticator } from '~/services/auth.server';

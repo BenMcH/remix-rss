@@ -1,6 +1,6 @@
 import { Feed } from "@prisma/client";
 import { useRef } from "react";
-import { useTransition, Link } from "remix";
+import { useTransition, Link } from "@remix-run/react";
 
 
 type FeedLinkProps = {

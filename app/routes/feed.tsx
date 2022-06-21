@@ -1,9 +1,8 @@
-import { LoaderFunction, Link, Outlet, json } from 'remix';
-import { useLoaderData } from 'remix';
+import { LoaderFunction, json } from '@remix-run/node';
+import { Link, Outlet, useLoaderData } from '@remix-run/react';
 
 import Recents from '~/components/Recents';
 import { authenticator } from '~/services/auth.server';
-import { Feed } from '@prisma/client';
 import FeedSearch from '~/components/FeedSearch';
 import { getSubscribedFeeds } from '~/services/subscription.server';
 

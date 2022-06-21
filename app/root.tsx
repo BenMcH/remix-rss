@@ -1,14 +1,13 @@
 import tailwind from '~/tailwind.css';
 import {
   Links,
-  LinksFunction,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration
-} from 'remix';
-import type { MetaFunction } from 'remix';
+} from '@remix-run/react';
+import type { LinksFunction, MetaFunction } from '@remix-run/node';
 
 export const meta: MetaFunction = () => {
   return { title: 'RSS Reader' };

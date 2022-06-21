@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useFetcher } from 'remix';
+import { useFetcher } from '@remix-run/react';
 import { FeedItemPost } from '~/services/rss-types';
 
 

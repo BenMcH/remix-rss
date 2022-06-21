@@ -1,6 +1,6 @@
 import { Feed } from "@prisma/client";
 import { useEffect, useRef } from "react";
-import { Form, Link, useFetcher, useTransition } from "remix";
+import { Form, Link, useFetcher, useTransition } from "@remix-run/react";
 
 export default function FeedSearch() {
 	let transition = useTransition()

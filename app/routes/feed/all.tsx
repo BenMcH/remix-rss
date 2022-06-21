@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { LoaderFunction, useLoaderData, MetaFunction, ActionFunction, json, useFetcher } from "remix";
+import { LoaderFunction, MetaFunction, ActionFunction, json } from "@remix-run/node";
+import {useLoaderData, useFetcher} from "@remix-run/react"
 import FeedLink from "~/components/FeedLink";
 import { authenticator } from "~/services/auth.server";
 import { deleteFeed, getAllFeeds } from "~/services/feed.server";

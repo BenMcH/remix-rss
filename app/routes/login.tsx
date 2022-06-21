@@ -1,4 +1,5 @@
-import { Form, ActionFunction, LoaderFunction, Link, json } from 'remix';
+import { ActionFunction, LoaderFunction, json } from '@remix-run/node';
+import { Form, Link } from '@remix-run/react';
 import { authenticator } from '~/services/auth.server';
 
 export let action: ActionFunction = async ({ request }) => {

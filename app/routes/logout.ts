@@ -1,7 +1,7 @@
-import { LoaderFunction } from 'remix';
+import { LoaderFunction } from '@remix-run/node';
 import { authenticator, getHost } from '~/services/auth.server';
 
-export let loader: LoaderFunction = async ({request}) => {
+export let loader: LoaderFunction = async ({ request }) => {
 	let params = new URLSearchParams();
 	params.append('returnTo', getHost());
 	params.append('client_id', process.env.CLIENT_ID!);

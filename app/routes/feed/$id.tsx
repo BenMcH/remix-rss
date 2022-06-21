@@ -1,5 +1,6 @@
 import FeedItem from '~/components/FeedItem';
-import { ActionFunction, Form, HeadersFunction, json, Link, LoaderFunction, MetaFunction, redirect, useLoaderData } from "remix";
+import { ActionFunction, HeadersFunction, json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
+import {Form, Link, useLoaderData } from '@remix-run/react'
 import { authenticator } from "~/services/auth.server";
 import { TFeed } from '~/services/rss-types';
 import { getFeedById, PAGE_SIZE } from '~/services/feed.server';
