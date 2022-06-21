@@ -1,4 +1,4 @@
-FROM node:16.13.2-alpine
+FROM node:18-alpine
 
 ADD package.json package.json
 ADD package-lock.json package-lock.json
