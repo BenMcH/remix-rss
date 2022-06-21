@@ -23,6 +23,7 @@ let rssFanout: Optional<BullQueue<null>>;
 if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.REDIS) {
 	rssQueue = Queue('rss-fetch', async ({ data }) => {
 		try {
+			log(`fetching rss feed: ${data.url}`)
 			await getFeed(data.url)
 			log(`fetched rss feed: ${data.url}`)
 		} catch {
@@ -46,7 +47,7 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 			},
 			opts: {
 				jobId: feed.url,
-				timeout: 15000
+				timeout: 5000,
 			}
 		})))
 	}, getRedisConnection());

@@ -1,6 +1,7 @@
 import { renderToString } from 'react-dom/server';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
+import { rssFanout } from './queues/rss.server';
 
 export default function handleRequest(
   request: Request,
@@ -18,4 +19,20 @@ export default function handleRequest(
     status: responseStatusCode,
     headers: responseHeaders
   });
+}
+
+declare global {
+  var appStartSignal: undefined | true;
+}
+
+if (!global.appStartSignal) {
+  global.appStartSignal = true;
+  
+  rssFanout?.drain()?.then(() => {
+		rssFanout!.add('rss-fanout', null, {
+      repeat: {
+        cron: '*/10 * * * *'
+      }
+    })
+  })
 }

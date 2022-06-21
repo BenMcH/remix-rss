@@ -7,5 +7,7 @@ module.exports = {
   publicPath: "/build/",
   serverBuildTarget: "node-cjs",
   devServerPort: 8002,
-  ignoredRouteFiles: [".*"]
+  ignoredRouteFiles: [".*"],
+
+  serverDependenciesToBundle: []
 };
