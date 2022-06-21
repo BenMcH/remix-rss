@@ -9,11 +9,11 @@ export let authenticator = new Authenticator<User>(sessionStorage, {
 });
 
 if (!process.env.CLIENT_ID) {
-	throw new Error('Missing CLIENT_ID env');
+  throw new Error('Missing CLIENT_ID env');
 }
 
 if (!process.env.CLIENT_SECRET) {
-	throw new Error('Missing CLIENT_SECRET env');
+  throw new Error('Missing CLIENT_SECRET env');
 }
 
 let auth0Strategy = new Auth0Strategy(
@@ -24,14 +24,14 @@ let auth0Strategy = new Auth0Strategy(
     domain: "mchone.us.auth0.com",
   },
   async ({ profile }) => {
-	  let email = profile.emails[0].value;
+    let email = profile.emails[0].value;
 
-	  return await getUserByEmail(email) ||  createUser(email);
+    return await getUserByEmail(email) || createUser(email);
   }
 );
 
 authenticator.use(auth0Strategy);
 
 export function getHost() {
-  return process.env.HOST || 'http://localhost:3000';
+  return process.env.APP_HOST || 'http://localhost:3000';
 }

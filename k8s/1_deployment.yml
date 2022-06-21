@@ -23,7 +23,7 @@ spec:
         args:
           - start
         env: 
-          - name: HOST
+          - name: APP_HOST
             value: https://rss.mchone.dev
           - name: CLIENT_ID
             valueFrom:
