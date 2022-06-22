@@ -31,7 +31,7 @@ if (!global.appStartSignal) {
   rssFanout?.drain()?.then(() => {
 		rssFanout!.add('rss-fanout', null, {
       repeat: {
-        cron: '*/10 * * * *'
+        cron: '*/30 * * * *'
       }
     })
   })
