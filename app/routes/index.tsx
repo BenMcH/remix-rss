@@ -26,7 +26,6 @@ type ActionData = {
 
 export let action: ActionFunction = async ({request}) => {
   let formData = await request.formData();
-  let feed = formData.get('feed')?.toString();
   let action = formData.get('_action')?.toString();
 
   const user = await authenticator.isAuthenticated(request)

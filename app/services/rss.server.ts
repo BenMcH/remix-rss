@@ -4,8 +4,14 @@ import { TNetworkRssFeed } from './rss-types';
 
 const parser = new Parser();
 
-export const getFeed = async (url: string): Promise<TNetworkRssFeed>  => {
-  const data = await fetch(url).then(result => result.text());
+const manualRedirectFetch: typeof fetch = (url, opt = {}) => fetch(url, { ...opt, redirect: 'manual' })
+  .then((res) => [301, 302].includes(res.status) ?
+    manualRedirectFetch(url, opt)
+    : res
+  )
+
+export const getFeed = async (url: string): Promise<TNetworkRssFeed> => {
+  const data = await manualRedirectFetch(url).then(result => result.text());
   const feed = await parser.parseString(data)
 
   const newFeed: TNetworkRssFeed = {
