@@ -1,5 +1,6 @@
 import Parser from 'rss-parser';
 import { insertFeedPosts } from '~/services/feedPost.server';
+import { log } from '~/utils/logger';
 import { TNetworkRssFeed } from './rss-types';
 
 const parser = new Parser();
@@ -12,7 +13,9 @@ const manualRedirectFetch: typeof fetch = (url, opt = {}) => fetch(url, { ...opt
 
 export const getFeed = async (url: string): Promise<TNetworkRssFeed> => {
   const data = await manualRedirectFetch(url).then(result => result.text());
+  log(`Fetched feed for ${url}`)
   const feed = await parser.parseString(data)
+  log(`Parsed feed for ${url}`)
 
   const newFeed: TNetworkRssFeed = {
     title: feed.title || '',
@@ -30,8 +33,9 @@ export const getFeed = async (url: string): Promise<TNetworkRssFeed> => {
     url,
   }
 
+  log(`inserting feed to db for ${url}`)
   await insertFeedPosts(newFeed);
-
+  log(`inserted feed to db for ${url}`)
 
   return newFeed;
 }

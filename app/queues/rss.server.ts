@@ -47,7 +47,7 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 		});
 		log(`Scanning ${feeds.length} feeds`)
 
-		return rssQueue!.addBulk(feeds.map(feed => ({
+		const result = await rssQueue!.addBulk(feeds.map(feed => ({
 			name: 'rss-fetch',
 			data: {
 				url: feed.url
@@ -55,8 +55,13 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 			opts: {
 				jobId: feed.url,
 				timeout: 5000,
+				
 			}
 		})))
+
+		console.log("successfully queued rss feeds")
+
+		return result;
 	}, getRedisConnection());
 }
 
