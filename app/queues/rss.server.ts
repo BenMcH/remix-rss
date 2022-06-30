@@ -33,10 +33,17 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 
 	rssFanout = Queue('rss-fanout', async () => {
 		log("Starting fan-out for rss feeds")
+		const pendingFeeds = await (await rssQueue!.getWaiting()).map((job) => job.data.url)
+
 		let feeds = await db.feed.findMany({
 			select: {
 				url: true
 			},
+			where: {
+				NOT: {
+					url: { in: pendingFeeds }
+				}
+			}
 		});
 		log(`Scanning ${feeds.length} feeds`)
 
