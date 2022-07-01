@@ -47,7 +47,7 @@ export async function countFeedPosts(feed: Pick<Feed, 'id'>) {
   });
 };
 
-const postsToKeep = 100
+const postsToKeep = 1000
 
 export async function deleteOldFeedPosts(feed: Pick<Feed, 'id'>) {
   let postCount = await db.feedPost.count({
