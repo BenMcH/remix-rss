@@ -25,8 +25,8 @@ async function getAllFeeds() {
 }
 
 async function getFeedById(id: Feed['id'], page = 1): Promise<Nullable<TDbFeed>> {
-	let feed: Nullable<TDbFeed>  = await db.feed.findFirst({
-		where: {id},
+	let feed: Nullable<TDbFeed> = await db.feed.findFirst({
+		where: { id },
 		select: {
 			title: true,
 			url: true,
@@ -53,36 +53,17 @@ async function getFeedById(id: Feed['id'], page = 1): Promise<Nullable<TDbFeed>>
 }
 
 async function getFeed(url: string, page = 1): Promise<Nullable<TDbFeed>> {
-	let feed: Nullable<TDbFeed>  = await db.feed.findFirst({
-		where: {url},
-		select: {
-			title: true,
-			url: true,
-			description: true,
-			id: true,
-			FeedPost: {
-				select: {
-					contentSnippet: true,
-					date: true,
-					id: true,
-					title: true,
-					link: true,
-				},
-				orderBy: {
-					date: 'desc'
-				},
-				take: PAGE_SIZE,
-				skip: PAGE_SIZE * page - PAGE_SIZE
-			}
-		}
-	});
+	let feedIdQuery = await db.feed.findFirst({
+		where: { url },
+		select: { id: true }
+	})
 
-	return feed || createFeed(url);
+	return feedIdQuery ? getFeedById(feedIdQuery.id) || createFeed(url);
 }
 
 async function createFeed(url: string) {
 	const feed = await rss.getFeed(url);
-	
+
 	if (feed && feed.items.length) {
 		let dbFeed: Omit<TDbFeed, 'FeedPost'> = await db.feed.create({
 			data: {
@@ -91,17 +72,17 @@ async function createFeed(url: string) {
 				description: feed.description
 			}
 		});
-		
+
 		let internalFeed: TNetworkRssFeed = {
 			...dbFeed,
 			items: feed.items
 		}
-		
+
 		await insertFeedPosts(internalFeed)
-		
+
 		return getFeed(url);
 	}
-	
+
 	return null;
 }
 
@@ -144,7 +125,6 @@ async function searchFeeds(query: string) {
 			]
 		}
 	});
-
 }
 
 export {

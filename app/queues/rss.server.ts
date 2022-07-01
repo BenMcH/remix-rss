@@ -4,6 +4,9 @@ import { db } from '~/utils/db.server';
 import IORedis from 'ioredis';
 import { error, log } from '~/utils/logger';
 import { Queue } from '~/utils/queue.server';
+import { Feed } from '@prisma/client';
+import { deleteOldFeedPosts } from '~/services/feedPost.server';
+import { getAllFeeds } from '~/services/feed.server';
 
 
 const getRedisConnection = () => {
@@ -17,6 +20,8 @@ const getRedisConnection = () => {
 type Optional<T, v = undefined> = T | v;
 
 let rssQueue: Optional<BullQueue<{ url: string }>>;
+
+let feedCleaner: Optional<BullQueue<{}>>;
 
 let rssFanout: Optional<BullQueue<null>>;
 
@@ -68,6 +73,20 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 
 		return result;
 	}, getRedisConnection());
+
+	feedCleaner = Queue('feed-cleaner', async () => {
+		const feeds = await getAllFeeds();
+
+		for (let feed of feeds) {
+			try {
+				log(`cleaning: ${feed.id}`)
+				await deleteOldFeedPosts(feed);
+				log(`cleaned: ${feed.id}`)
+			} catch {
+				error(`failed to clean rss feed: ${feed.id}`)
+			}
+		}
+	}, getRedisConnection());
 }
 
-export { rssQueue, rssFanout };
+export { rssQueue, rssFanout, feedCleaner };

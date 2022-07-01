@@ -1,7 +1,7 @@
 import { renderToString } from 'react-dom/server';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
-import { rssFanout } from './queues/rss.server';
+import { feedCleaner, rssFanout } from './queues/rss.server';
 
 export default function handleRequest(
   request: Request,
@@ -32,6 +32,14 @@ if (!global.appStartSignal) {
 		rssFanout!.add('rss-fanout', null, {
       repeat: {
         cron: '*/30 * * * *'
+      }
+    })
+  })
+
+ feedCleaner?.drain()?.then(() => {
+		feedCleaner!.add('feed-cleaner', {}, {
+      repeat: {
+        cron: '0 * * * *'
       }
     })
   })
