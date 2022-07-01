@@ -20,11 +20,16 @@ let rssQueue: Optional<BullQueue<{ url: string }>>;
 
 let rssFanout: Optional<BullQueue<null>>;
 
+const timeout = <T>(promise: Promise<T>, ms: number): Promise<T> => new Promise(async (resolve, reject) => {
+	setTimeout(() => reject('Operation timed out'), ms);
+	promise.then(resolve).catch(reject)
+});
+
 if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.REDIS) {
 	rssQueue = Queue('rss-fetch', async ({ data }) => {
 		try {
 			log(`fetching rss feed: ${data.url}`)
-			await getFeed(data.url)
+			await timeout(getFeed(data.url), 5000)
 			log(`fetched rss feed: ${data.url}`)
 		} catch {
 			error(`failed to fetch rss feed: ${data.url}`)
@@ -55,7 +60,7 @@ if (process.env.REDIS_PASSWORD || process.env.REDIS_SERVICE_HOST || process.env.
 			opts: {
 				jobId: feed.url,
 				timeout: 5000,
-				
+
 			}
 		})))
 
